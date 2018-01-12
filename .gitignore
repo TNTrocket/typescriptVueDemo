@@ -1,0 +1,12 @@
+.DS_Store
+node_modules/
+dist/
+npm-debug.log
+.idea
+build
+public/temp
+public/*/temp/
+config/env/development.js
+static/yidong/*.xml
+static/*.xml
+logs/
