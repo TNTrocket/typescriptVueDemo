@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import news from 'screens/news/news'
-import shareNews from 'screens/share/shareNews'
-import shareQuestion from 'screens/share/shareQuestion'
-import protocol from 'screens/protocol/protocol'
+// import news from 'screens/news/news'
+// import shareNews from 'screens/share/shareNews'
+// import shareQuestion from 'screens/share/shareQuestion'
+// import protocol from 'screens/protocol/protocol'
 
 
 let routes, router;
@@ -14,7 +14,7 @@ routes = [
     {
         path: '/news',
         name: 'news',
-        component: news,
+        component: () => import('screens/news/news'),
         // meta: {
         //     title: '尚德机构商城'
         // }
@@ -22,17 +22,17 @@ routes = [
     {
         path: '/shareNews',
         name: 'shareNews',
-        component: shareNews
+        component: () => import('screens/share/shareNews')
     },
     {
         path: '/shareQuestion',
         name: 'shareQuestion',
-        component: shareQuestion
+        component: () => import('screens/share/shareQuestion')
     },
     {
         path: '/protocol',
         name: 'protocol',
-        component: protocol
+        component: () => import('screens/protocol/protocol')
     }
 ];
 router = new Router({

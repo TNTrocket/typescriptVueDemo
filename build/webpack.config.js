@@ -1,5 +1,4 @@
 let path = require('path')
-let HtmlWebpackPlugin = require('html-webpack-plugin')
 let vueLoaderConfig = require('./vue-loaderConf')
 
 function resolve(dir) {
@@ -13,7 +12,7 @@ let webpackConfig = {
     output: {
         path: path.join(__dirname, '../dist'),
         filename: './[name].[hash:7].js',
-        chunkFilename: "[name].[name].chunk.js"
+        chunkFilename: "[name].chunk.js"
     },
     resolve: {
         extensions: ['.js','.vue', '.json'],

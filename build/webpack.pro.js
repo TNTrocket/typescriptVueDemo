@@ -7,11 +7,15 @@ let HtmlWebpackPlugin = require('html-webpack-plugin')
 let merge = require("webpack-merge");
 let ExtractTextPlugin = require('extract-text-webpack-plugin')
 let OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+let OfflinePlugin = require('offline-plugin')
 
 
 module.exports = merge(baseWebpackConfig, {
     module: {
-        rules: styleLoaderConf.styleLoaders({sourceMap: false})
+        rules: [...styleLoaderConf.styleLoaders({
+            sourceMap: false,
+            extract: true
+        })]
     },
     plugins: [
         // http://vuejs.github.io/vue-loader/en/workflow/production.html
@@ -28,9 +32,12 @@ module.exports = merge(baseWebpackConfig, {
             },
             sourceMap: true
         }),
+        new OfflinePlugin(),
         // extract css into its own file
         new ExtractTextPlugin({
-            filename: '[name].[contenthash].css'
+            filename: '[name].[contenthash:7].css',
+            disable: false,
+            allChunks: true
         }),
         // Compress extracted CSS. We are using this plugin so that possible
         // duplicated CSS from different components can be deduped.
