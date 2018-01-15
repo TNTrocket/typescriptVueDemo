@@ -24,6 +24,9 @@ axios.interceptors.response.use(function ({data, config, status}) {
     if (!isShowIngError) {
         isShowIngError = true;
     }
+    if(error.response.status === 404){
+        error = 404
+    }
     return Promise.reject(error);
 });
 

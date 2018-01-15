@@ -34,8 +34,12 @@
                 this.source = source;
                 this.publishTime = publishTime;
                 this.article = body;
-            },(message)=>{
-                MessageBox("提示", message)
+            },(status)=>{
+                if(status === 404){
+                    MessageBox("提示", "请确认网络是否正常")
+                }else{
+                    MessageBox("提示", status)
+                }
             });
         }
     }

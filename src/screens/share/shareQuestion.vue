@@ -43,6 +43,12 @@
                 this.content = data.content;
                 this.chooseOption = data.options || [];
                 this.contentArray = data.children || [];
+            },(status)=>{
+                if(status === 404){
+                    MessageBox("提示", "请确认网络是否正常")
+                }else{
+                    MessageBox("提示", status)
+                }
             })
         },
         watch: {

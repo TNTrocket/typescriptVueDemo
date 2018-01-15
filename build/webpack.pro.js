@@ -32,10 +32,14 @@ module.exports = merge(baseWebpackConfig, {
             },
             sourceMap: true
         }),
-        new OfflinePlugin(),
+        new OfflinePlugin({
+            ServiceWorker: {
+                output: './js/sw.js'
+            }
+        }),
         // extract css into its own file
         new ExtractTextPlugin({
-            filename: '[name].[contenthash:7].css',
+            filename: './css/[name].[contenthash:7].css',
             disable: false,
             allChunks: true
         }),

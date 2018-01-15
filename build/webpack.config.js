@@ -11,8 +11,8 @@ let webpackConfig = {
     },
     output: {
         path: path.join(__dirname, '../dist'),
-        filename: './[name].[hash:7].js',
-        chunkFilename: "[name].chunk.js"
+        filename: './js/[name].[hash:7].js',
+        chunkFilename: "./js/[name].chunk.js"
     },
     resolve: {
         extensions: ['.js','.vue', '.json'],

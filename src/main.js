@@ -2,7 +2,6 @@ import Vue from 'vue'
 import App from './app'
 import router from './router'
 import 'util/countRem'
-import './common.less'
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 
 if(process.env.NODE_ENV==="production"){

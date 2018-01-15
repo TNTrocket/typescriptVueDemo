@@ -4,16 +4,10 @@
 
 <script>
     export default {
-        name: 'app',
-        components: {},
-
-        mounted() {
-
-        },
-        methods: {}
+        name: 'app'
     }
 </script>
 
 <style lang="less" moudle>
-
+  @import "./common";
 </style>
