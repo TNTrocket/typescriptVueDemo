@@ -8,9 +8,16 @@ let merge = require("webpack-merge");
 let ExtractTextPlugin = require('extract-text-webpack-plugin')
 let OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 let OfflinePlugin = require('offline-plugin')
+let config = require("./config")
+let utils = require("./utils")
 
 
 module.exports = merge(baseWebpackConfig, {
+    output: {
+        path: config.build.assetsRoot,
+        filename: utils.assetsPath('js/[name].[chunkhash].js'),
+        chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
+    },
     module: {
         rules: [...styleLoaderConf.styleLoaders({
             sourceMap: false,
@@ -34,12 +41,12 @@ module.exports = merge(baseWebpackConfig, {
         }),
         new OfflinePlugin({
             ServiceWorker: {
-                output: './js/sw.js'
+                output: utils.assetsPath('js/sw.js')
             }
         }),
         // extract css into its own file
         new ExtractTextPlugin({
-            filename: './css/[name].[contenthash:7].css',
+            filename: utils.assetsPath('/css/[name].[contenthash:7].css'),
             disable: false,
             allChunks: true
         }),

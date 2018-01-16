@@ -12,12 +12,6 @@ module.exports = merge(baseWebpackConfig,{
     entry: {
         app: ['./src/main.js','webpack-hot-middleware/client?reload=true']
     },
-    output: {
-        path: path.join(__dirname, '../dist'),
-        filename: 'js/[name].[hash:7].js',
-        chunkFilename: "js/[name].chunk.js",
-        publicPath: './',
-    },
     module: {
         rules: [...styleLoaderConf.styleLoaders({sourceMap: true})]
     },

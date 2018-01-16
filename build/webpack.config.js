@@ -1,5 +1,7 @@
 let path = require('path')
 let vueLoaderConfig = require('./vue-loaderConf')
+let config = require("./config")
+let utils = require("./utils")
 
 function resolve(dir) {
     return path.join(__dirname,"..",dir)
@@ -10,9 +12,12 @@ let webpackConfig = {
         app: './src/main.js'
     },
     output: {
-        path: path.join(__dirname, '../dist'),
-        filename: './js/[name].[hash:7].js',
-        chunkFilename: "./js/[name].chunk.js"
+        path: config.build.assetsRoot,
+        filename: utils.assetsPath('js/[name].[hash].js'),
+        chunkFilename: utils.assetsPath('js/[id].[hash].js'),
+        publicPath: process.env.NODE_ENV === 'production'
+            ? config.build.assetsPublicPath
+            : config.dev.assetsPublicPath ,
     },
     resolve: {
         extensions: ['.js','.vue', '.json'],
@@ -40,7 +45,7 @@ let webpackConfig = {
                 loader: 'url-loader',
                 options: {
                     limit: 10000,
-                    name: 'img/[name].[hash:7].[ext]'
+                    name: utils.assetsPath('img/[name].[hash:7].[ext]')
                 }
             },
             {
@@ -48,7 +53,7 @@ let webpackConfig = {
                 loader: 'url-loader',
                 options: {
                     limit: 10000,
-                    name: 'fonts/[name].[hash:7].[ext]'
+                    name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
                 }
             }
         ]
