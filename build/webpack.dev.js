@@ -13,9 +13,10 @@ module.exports = merge(baseWebpackConfig,{
         app: ['./src/main.js','webpack-hot-middleware/client?reload=true']
     },
     output: {
-        path: path.join(__dirname, 'dist'),
-        filename: '[name].js',
-        publicPath: "/"
+        path: path.join(__dirname, '../dist'),
+        filename: 'js/[name].[hash:7].js',
+        chunkFilename: "js/[name].chunk.js",
+        publicPath: './',
     },
     module: {
         rules: [...styleLoaderConf.styleLoaders({sourceMap: true})]
@@ -26,8 +27,7 @@ module.exports = merge(baseWebpackConfig,{
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: '"development"'
-            },
-            NUMBER: 12,
+            }
         }),
         // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
         new webpack.HotModuleReplacementPlugin(),

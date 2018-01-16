@@ -9,7 +9,9 @@
                 <p :class="$style.txtTips">打开"伴你考教师"</p>
             </div>
             <div :class="$style.download">
-                立即下载
+                <router-link :to="{path: 'download'}">
+                    立即下载
+                </router-link>
             </div>
         </div>
     </div>
@@ -52,6 +54,11 @@
             text-align: center;
             color: #fff;
             font-weight: lighter;
+            a{
+                text-decoration: none;
+                color: #fff;
+                display: block;
+            }
         }
         .txtTitle{
             font-size: 36px;
