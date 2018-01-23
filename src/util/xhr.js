@@ -1,5 +1,6 @@
 import axios from 'axios';
-
+import {cache} from 'util/global'
+import store from '../store/'
 
 axios.defaults.baseURL = '/ntce-c';
 axios.defaults.headers.common['Cache-Control'] = 'no-cache';
@@ -10,7 +11,7 @@ axios.interceptors.response.use(function ({data, config, status}) {
     if (status === 200) {
         if (data.code === 10000) {
             return Promise.resolve(data.data);
-        }else {
+        } else {
             if (config.ignoreErrorModal) {
                 return Promise.reject(data);
             } else {
@@ -24,7 +25,7 @@ axios.interceptors.response.use(function ({data, config, status}) {
     if (!isShowIngError) {
         isShowIngError = true;
     }
-    if(error.response.status === 404){
+    if (error.response.status === 404) {
         error = 404
     }
     return Promise.reject(error);
@@ -32,17 +33,20 @@ axios.interceptors.response.use(function ({data, config, status}) {
 
 export default {
     get(url, params = {}, config = {}) {
+        let {state: { user }} = store;
         return axios({
             method: 'get',
             url,
             params,
             ignoreErrorModal: config.ignoreErrorModal || false,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                'token': user.token || cache.get("token")
             }
         })
     },
     post(url, data, config = {}) {
+        let {state: { user }} = store;
         return axios({
             method: 'post',
             url: url,
@@ -50,7 +54,8 @@ export default {
             ignoreErrorModal: config.ignoreErrorModal || false,
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'token': user.token || cache.get("token")
             }
         })
     },

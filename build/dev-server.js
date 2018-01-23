@@ -62,7 +62,7 @@ app.use(proxy("/ntce-c",proxyOptions));
 // })
 
 
-app.listen(3030, function (err) {
+app.listen(3000, function (err) {
     if (err) {
         // do something
         return
