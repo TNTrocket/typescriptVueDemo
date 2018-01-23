@@ -32,6 +32,7 @@
 <script>
     import apiCall from 'util/xhr'
     import {cache} from 'util/global'
+    import {Indicator} from 'mint-ui';
 
     export default {
         data() {
@@ -41,13 +42,14 @@
             }
         },
         created() {
+            Indicator.open();
             let {type = "", module = ""} = this.$route.query;
             apiCall.post("/TKT/moduleOrWrongWordOverview", {
                 type,
                 module
             }).then((data) => {
               this.wrongWordList = data.wrongWordList
-
+                Indicator.close();
             });
         },
         mounted() {
@@ -61,9 +63,10 @@
                 let module3Top = document.querySelector(".module3").offsetTop
                 if (position.scrollTop >= module2Top) {
                    this.moduleName ="module2"
-                }
-                if (position.scrollTop >= module3Top) {
+                }else if (position.scrollTop >= module3Top) {
                     this.moduleName ="module3"
+                }else{
+                    this.moduleName ="module1"
                 }
 
             },

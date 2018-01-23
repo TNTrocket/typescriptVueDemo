@@ -76,6 +76,7 @@
     import first from "./first.vue"
     import {mapState, mapActions, mapMutations, mapGetters} from 'vuex'
     import {cache} from 'util/global'
+    import {Indicator} from 'mint-ui';
 
     export default {
         data() {
@@ -92,6 +93,7 @@
 
         },
         mounted() {
+            Indicator.open();
             apiCall.post("/TKT/TKTOverview").then((data) => {
                 this.practicedNo = data.practicedNo;
                 this.totalNo = data.totalNo;
@@ -99,6 +101,7 @@
                 this.wrongWordModules = data.wrongWordModules;
                 this.wrongWordNo = data.wrongWordNo;
                 this.isDone = this.practicedNo === this.totalNo;
+                Indicator.close();
             })
         },
         updated() {

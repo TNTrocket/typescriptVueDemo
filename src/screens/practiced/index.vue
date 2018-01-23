@@ -54,6 +54,7 @@
 <script>
     import apiCall from 'util/xhr'
     import {cache} from 'util/global'
+    import {Indicator} from 'mint-ui';
 
     export default {
         data() {
@@ -68,6 +69,7 @@
             }
         },
         created() {
+            Indicator.open();
             let {type = "", module = ""} = this.$route.query;
             apiCall.post("/TKT/moduleOrWrongWordOverview", {
                 type,
@@ -82,7 +84,7 @@
                 }else if(this.unpracticedNumber!==0&& this.practicedNumber!==0){
                     this.btnTxt ="继续练习"
                 }
-
+                Indicator.close();
             });
             this.moduleName = module
         },

@@ -1,7 +1,7 @@
 <template>
     <div :class="$style.wrapper">
-        <div :class="$style.headerBox" v-hammer:swipe.left="handleLeft">
-            <div v-hammer:swipe.right="handleRight" :class="$style.headerBox">
+        <div :class="$style.headerBox" v-touch:swipe="handle">
+            <div  :class="$style.headerBox">
                 <div :class="$style.header">
                     <div :class="$style.box">
                         <div :class="$style.title">
@@ -162,15 +162,19 @@
             goPrev: function () {
                 this.currentAnswer = this.currentAnswer - 1;
             },
-            handleLeft: function () {
-                if (this.currentAnswer + 1 !== this.respondenceList.length) {
-                    this.currentAnswer = this.currentAnswer + 1;
-                }
-            },
-            handleRight: function () {
-                if (this.currentAnswer !== 0) {
-                    this.currentAnswer = this.currentAnswer - 1;
-                }
+            handle: function (type) {
+               switch (type){
+                   case "swipeleft":
+                       if (this.currentAnswer + 1 !== this.respondenceList.length) {
+                           this.currentAnswer = this.currentAnswer + 1;
+                       }
+                       break;
+                   case "swiperight":
+                       if (this.currentAnswer !== 0) {
+                           this.currentAnswer = this.currentAnswer - 1;
+                       }
+               }
+
             },
             finish: function () {
                 this.isFinish(this.respondenceList,this.wrongWordsList);

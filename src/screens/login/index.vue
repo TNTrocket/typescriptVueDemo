@@ -32,11 +32,11 @@
 
 
     export default {
-        data() {
-            return {
-                targetUrl: ""
-            }
-        },
+//        data() {
+//            return {
+//                targetUrl: ""
+//            }
+//        },
         created() {
 
         },
