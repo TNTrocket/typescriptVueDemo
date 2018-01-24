@@ -11,3 +11,7 @@ export const login = ({ commit }, payload) => {
   })
 }
 
+export const changeIsNew = ({ commit }, payload) => {
+    return commit(types.CHANGESTATUS, {...payload})
+
+}

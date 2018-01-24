@@ -160,7 +160,6 @@
                         }]
                     }).then(() => {
                         Indicator.close();
-                        cache.set("isNew","N");
                         this.$set(this.respondenceList, this.currentAnswer, tempObj)
                     });
                 }

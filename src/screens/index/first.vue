@@ -17,6 +17,7 @@
 <script>
     import apiCall from 'util/xhr'
     import {cache} from 'util/global'
+    import {mapState, mapActions, mapMutations, mapGetters} from 'vuex'
 
     export default {
 //        data() {
@@ -32,9 +33,14 @@
         },
         methods: {
             startRecite: function () {
+                this.changeStatus({isNew:"N"});
+                cache.set("isNew","N");
                 cache.remove("isReciteComplete");
                 this.$router.push({path: "recite"})
-            }
+            },
+            ...mapActions({
+                changeStatus: "changeIsNew"
+            })
         }
     }
 </script>

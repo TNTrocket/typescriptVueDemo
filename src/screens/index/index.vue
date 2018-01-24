@@ -58,7 +58,7 @@
                     <div :class="$style.doneTxt">
                         <span>恭喜！所有单词都背完啦！</span>
                         <span :class="$style.again">
-                        <span>从头再来</span>
+                        <span @click="again">从头再来</span>
                         <span :class="$style.doneArrow"></span>
                     </span>
                     </div>
@@ -129,13 +129,24 @@
                     type,
                     module: module
                 }})
-            }
+            },
+            again(){
+                apiCall.post("/TKT/replay").then(()=>{
+                   this.changeStatus({isNew:"Y"});
+                   cache.set("isNew","Y");
+                })
+            },
+            ...mapActions({
+                changeStatus: "changeIsNew"
+            })
 
         },
         computed: {
             ...mapState({
-                isNew: state => cache.get("isNew") || state.user.isNew,
-            })
+                isNew: state =>{
+                    return cache.get("isNew") || state.user.isNew
+                }
+            }),
         },
     }
 </script>

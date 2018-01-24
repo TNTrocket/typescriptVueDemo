@@ -11,5 +11,9 @@ export default {
       });
       cache.set("token",data.token);
       cache.set("isNew",data.isNew);
-  }
+  },
+    [types.CHANGESTATUS] (state, data) {
+        Vue.set(state.user, "isNew", data.isNew);
+        cache.set("isNew",data.isNew);
+    }
 }
