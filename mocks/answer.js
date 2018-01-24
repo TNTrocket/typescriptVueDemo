@@ -29,7 +29,7 @@ Mock.mock(/ntce-c\/TKT\/TKTOverview/, 'post', function (options) {
                     'module2':'x/y',
                     'module3':'x/y'
                 },
-                'wrongWordNo':'x',
+                'wrongWordNo':'12',
                 'wrongWordModules':{
                     'module1':'x','module2':'x','module3':'x'
                 }

@@ -1,5 +1,5 @@
 <template>
-   <result :practicType="practicType"></result>
+   <result :practicType="practicType" resultMode="practiced"></result>
 </template>
 
 <script>

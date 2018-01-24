@@ -1,9 +1,11 @@
 <template>
-    <result :practicType="practicType" resultTitle="错题复习" :isNeedDelete="isNeedDelete"></result>
+    <result  resultTitle="错题复习" :isNeedDelete="isNeedDelete"
+            resultMode="wrongTxt"
+    ></result>
 </template>
 
 <script>
-    import result from '../result/index'
+    import result from './showResult'
 
     export default {
         data() {
@@ -13,6 +15,7 @@
             }
         },
         created() {
+
         },
         mounted() {
 

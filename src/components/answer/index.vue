@@ -113,24 +113,7 @@
             this.respondenceListLength = this.respondenceList.length
         },
         mounted() {
-            let target = this.currentList.options || [];
-            let wrongChoice = "";
-            let wrongIndex = 0;
-            target.forEach((item,index)=>{
-                if (item.option === this.currentList.currectOption) {
-                    this.currentMeaning = item.meaning;
-                }
-                else if(this.currentList.finalOption && this.currentList.finalOption === item.option ){
-                    wrongChoice = item.option;
-                    wrongIndex = index;
-                }
-            });
-            if (this.currentList.finalOption === this.currentList.currectOption) {
-                this.$set(this.respondenceList[this.currentAnswer],"isAnswer",true)
-            }else if(this.currentList.finalOption && this.currentList.finalOption!== this.currentList.currectOption){
-                this.$set(this.respondenceList[this.currentAnswer],"isAnswer",true);
-                this.$set(this.respondenceList[this.currentAnswer],"index",wrongIndex)
-            }
+            this.keepStatus();
         },
         computed: {
             currentList: function () {
@@ -146,10 +129,16 @@
                 return this.answerList[this.currentAnswer].currectOptionId || ""
             }
         },
+        watch:{
+            currentAnswer:function () {
+                this.keepStatus();
+            }
+        },
         methods: {
             respondence: function (data, index) {
                 let finalOption = this.currentList.finalOption;
                 let isAnswer = finalOption ? finalOption : this.respondenceList[this.currentAnswer].isAnswer
+                console.log(isAnswer)
                 if (!isAnswer) {
                     let tempObj = {
                         isAnswer: true,
@@ -219,6 +208,26 @@
                     }
 //                    delete this.answerList[this.currentAnswer]
                 })
+            },
+            keepStatus(){
+                let target = this.currentList.options || [];
+                let wrongChoice = "";
+                let wrongIndex = 0;
+                target.forEach((item,index)=>{
+                    if (item.option === this.currentList.currectOption) {
+                        this.currentMeaning = item.meaning;
+                    }
+                    else if(this.currentList.finalOption && this.currentList.finalOption === item.option ){
+                        wrongChoice = item.option;
+                        wrongIndex = index;
+                    }
+                });
+                if (this.currentList.finalOption === this.currentList.currectOption) {
+                    this.$set(this.respondenceList[this.currentAnswer],"isAnswer",true)
+                }else if(this.currentList.finalOption && this.currentList.finalOption!== this.currentList.currectOption){
+                    this.$set(this.respondenceList[this.currentAnswer],"isAnswer",true);
+                    this.$set(this.respondenceList[this.currentAnswer],"index",wrongIndex)
+                }
             }
         },
 

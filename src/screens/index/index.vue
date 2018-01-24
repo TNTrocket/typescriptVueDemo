@@ -38,7 +38,7 @@
                     </div>
                     <div :class="$style.moduleList">
                         <ul>
-                            <li v-for="(val,key) in practiced" @click="gowrongTxt(2,val)">
+                            <li v-for="(val,key) in practiced" @click="gowrongTxt(2,key)">
                                 <div :class="$style.module">
                                     M
                                 </div>
@@ -101,6 +101,9 @@
                 this.wrongWordModules = data.wrongWordModules;
                 this.wrongWordNo = data.wrongWordNo;
                 this.isDone = this.practicedNo === this.totalNo;
+                cache.set("totalNo",this.totalNo);
+                cache.set("practicedNo",this.practicedNo);
+                cache.set("wrongWordNo",this.wrongWordNo);
                 Indicator.close();
             })
         },

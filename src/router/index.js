@@ -50,7 +50,7 @@ routes = [
     {
         path: '/practicedResult',
         name: 'practicedResult',
-        component: () => import('screens/moduleResult/moduleResult')
+        component: () => import('screens/practicedResult/practicedResult')
     },
     {
         path: '/wrongTxt',

@@ -21,14 +21,18 @@
                         <div>
                             错误：{{wrongNumber}}
                         </div>
-                        <div v-show="resultMode && resultMode=='practiced'">
-                           总进度：{{parseInt(practicedNo) + rightNumber + wrongNumber}}/{{totalNo}}
+                        <div>
+                            错题：{{wrongWordNo}}
                         </div>
                     </div>
                 </div>
             </div>
+            <div :class="$style.delete" v-show="rightNumber">
+                <span>删除本次答对的单词</span>
+                <span :class="$style.deleteArrow"></span>
+            </div>
             <div :class="$style.wrongWordsList">
-                <div :class="$style.title" v-show="wrongWordsList.length!==0">
+                <div :class="$style.title" v-show="wrongNumber!==0">
                     以下单词需要再加强记忆
                 </div>
                 <div :class="$style.wordsBox" v-for="item in wrongWordsList">
@@ -58,16 +62,13 @@
     import answer from 'components/answer/index'
     import toast from 'components/toast/Toast'
     import {cache} from 'util/global'
+    import {Indicator} from 'mint-ui';
 
     export default {
         props: {
             resultTitle: {
                 type: String,
                 default: "新单词"
-            },
-            practicType: {
-                type: Number,
-                default: 0
             },
             noKnowBtn: {
                 type: Boolean,
@@ -88,9 +89,10 @@
                 rightNumber: 0,
                 wrongNumber: 0,
                 wrongWordsList: [],
-                totalNo:0,
-                practicedNo:0,
-                wrongWordNo:0
+                totalNo: 0,
+                practicedNo: 0,
+                wrongWordNo: 0,
+                originAnswerNumber:0
             }
         },
         created() {
@@ -99,32 +101,19 @@
             this.practicedNo = cache.get("practicedNo") || 0;
             this.wrongWordNo = cache.get("wrongWordNo") || 0;
             this.iscomplete = cache.get("iscomplete") || "";
-            if (this.iscomplete) {
-                let rightNumber = 0;
-                let wrongNumber = 0;
-                let cacheData = cache.get("resultData") || null;
-                let data = JSON.parse(cacheData) || [];
-                this.answerNumber = data.length || 1;
-                data.forEach((item) => {
-                    if (item.isCurrent === true) {
-                        rightNumber++;
-                    } else if (item.isCurrent === false) {
-                        wrongNumber++;
-                    }
-                });
-                this.wrongWordsList = cache.get("wrongList") || [];
-                this.wrongNumber = wrongNumber;
-                this.rightNumber = rightNumber;
+            let {practicType = "", module = ""} = this.$route.query;
 
-            } else {
-
+            if(this.iscomplete){
+                this.isFinish();
+            }else {
                 apiCall.post("/TKT/answerList", {
-                    practicType: this.practicType,
-                    batchId: batchId
+                    practicType: practicType,
+                    batchId: batchId,
+                    module: module
                 }).then((data) => {
                     cache.set("batchId", data.batchId);
                     for (let item of data.answerlist) {
-                        if (item.type == 1) {
+                        if (item.type == 0) {
                             let temp = {};
                             item.answers.forEach((res, index) => {
                                 if (temp[res.module]) {
@@ -140,45 +129,60 @@
                             });
                             this.newWord = item.answers;
                             this.module = temp
+                            this.originAnswerNumber = item.answers.length;
                         }
                     }
                 })
             }
+
         },
         mounted() {
 
         },
         methods: {
-            isFinish: function (data, wrongList) {
+            isFinish: function () {
                 let iscomplete = cache.get("iscomplete") || true;
-
-                let cacheWrong = cache.get("wrongList") || [];
-                this.wrongWordsList = wrongList || cacheWrong;
-
-                let rightNumber = 0;
-                let wrongNumber = 0;
-                let cacheData = cache.get("resultData") || null;
-                data = data || JSON.parse(cacheData) || [];
-                if (!cacheData) {
-                    cache.set("resultData", data);
-                }
-                if (cacheWrong.length === 0) {
-                    cache.set("wrongList", wrongList);
-                }
                 if (!cache.get("iscomplete")) {
                     cache.set("iscomplete", true);
                 }
-                this.answerNumber = data.length || 1;
-                data.forEach((item) => {
-                    if (item.isCurrent === true) {
-                        rightNumber++;
-                    } else if (item.isCurrent === false) {
-                        wrongNumber++;
+                this.iscomplete = iscomplete;
+                let batchId = cache.get("batchId") || "";
+                let {practicType = "", module = ""} = this.$route.query;
+                Indicator.open();
+                apiCall.post("/TKT/answerList", {
+                    practicType: practicType,
+                    batchId: batchId,
+                    module: module
+                }).then((data) => {
+                    Indicator.close();
+                    for (let item of data.answerlist) {
+                        if (item.type == 0) {
+                            let tempArray = [];
+                            let rightNumber = 0;
+                            let wrongNumber = 0;
+                            item.answers.forEach((res, index) => {
+                                if (res.currectOption === res.finalOption) {
+                                    rightNumber++
+                                } else if (res.finalOption) {
+                                    wrongNumber++;
+                                    for (let options of res.options) {
+                                        if (res.currectOption === options.option) {
+                                            res.meaning = options.meaning
+                                        }
+                                    }
+                                    tempArray.push(res);
+                                }
+                            });
+                            this.rightNumber = rightNumber;
+                            this.wrongNumber = wrongNumber;
+                            this.answerNumber = item.answers.length;
+                            this.wrongWordsList = tempArray;
+                            if(this.originAnswerNumber>this.answerNumber){
+                                this.wrongWordNo =this.wrongWordNo-(this.originAnswerNumber-this.answerNumber)
+                            }
+                        }
                     }
-                });
-                this.wrongNumber = wrongNumber;
-                this.rightNumber = rightNumber;
-                this.iscomplete = iscomplete
+                })
             },
             goHomePage() {
                 this.$router.push({path: "index"})
@@ -198,6 +202,24 @@
         background: #EFEFF4;
         overflow-y: scroll;
         padding-bottom: 200px;
+    }
+    .delete{
+        font-size: 32px;
+        color: #5E3F8B;
+        margin-top: 44px;
+        text-align: center;
+        >span{
+            display: inline-block;
+            vertical-align: middle;
+        }
+       .deleteArrow{
+           background: url("../../img/indexDoneArrow.png");
+           width: 16px;
+           height: 28px;
+           margin-left: 10px;
+           background-size: 100% 100%;
+
+       }
     }
 
     .btn {

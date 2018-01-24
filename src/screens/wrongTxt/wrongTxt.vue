@@ -46,7 +46,7 @@
             let {type = "", module = ""} = this.$route.query;
             apiCall.post("/TKT/moduleOrWrongWordOverview", {
                 type,
-                module
+                module:module
             }).then((data) => {
                 this.wrongWordList = data.wrongWordList;
                 Indicator.close();
@@ -75,7 +75,11 @@
                 cache.remove("iscomplete");
                 cache.remove("resultData");
                 cache.remove("wrongList");
-                this.$router.push({path:"wrongResult"});
+                let {type = "", module = ""} = this.$route.query;
+                this.$router.push({path:"wrongResult",query:{
+                    practicType: type==2 ?3 :2,
+                    module:module
+                }});
             }
         }
     }
