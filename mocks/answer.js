@@ -77,3 +77,19 @@ Mock.mock(/ntce-c\/TKT\/moduleOrWrongWordOverview/, 'post', function (options) {
         }
     )
 });
+
+
+Mock.mock(/ntce-c\/TKT\/deleteWrongWordList/, 'post', function (options) {
+    return Mock.mock({
+            "code": 10000,
+            "msg": "ok",
+            "data": {
+                token : 'x',      // 后续接口验证身份用
+                uid: "efe",			  // 用户id
+                avatarUrl: 'x',	  // 用户头像URL
+                nickname: 'x',    // 用户昵称，如果有
+                'isNew':'Y' //是否首次获取  Y-首次，N-非首次
+            }
+        }
+    )
+});

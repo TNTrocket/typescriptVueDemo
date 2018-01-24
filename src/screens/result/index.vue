@@ -1,9 +1,10 @@
 <template>
     <div :class="$style.resultWrapper">
         <answer :word="this.newWord" v-if="this.newWord.length!==0 && !iscomplete"
-                :title="resultTitle" :isFinish="isFinish"
+                :title="resultTitle" :isFinish="isFinish" :noKnowBtn="noKnowBtn"
+                :isNeedDelete="isNeedDelete"
         ></answer>
-        <div v-else-if="iscomplete ">
+        <div v-else-if="iscomplete">
             <div :class="$style.resultBox">
                 <div :class="$style.header">
                     <div :class="$style.title">
@@ -64,6 +65,14 @@
             practicType: {
                 type: Number,
                 default: 0
+            },
+            noKnowBtn: {
+                type: Boolean,
+                default: false
+            },
+            isNeedDelete: {
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -74,47 +83,67 @@
                 answerNumber: 1,
                 rightNumber: 0,
                 wrongNumber: 0,
-                wrongWordsList:[]
+                wrongWordsList: []
             }
         },
         created() {
             let batchId = cache.get("batchId") || "";
-            console.log(this.practicType);
-            apiCall.post("/TKT/answerList", {
-                practicType: this.practicType,
-                batchId: batchId
-            }).then((data) => {
-                for (let item of data.answerlist) {
-                    if (item.type == 1) {
-                        let temp = {};
-                        item.answers.forEach((res, index) => {
-                            if (temp[res.module]) {
-                                temp[res.module] += temp[res.module]
-                            } else {
-                                temp[res.module] = 1;
-                            }
-                            for (let options of res.options) {
-                                if (res.currectOption === options.option) {
-                                    item.answers[index].meaning = options.meaning
-                                }
-                            }
-                        });
-                        this.newWord = item.answers;
-                        this.module = temp
+            this.iscomplete = cache.get("iscomplete") || "";
+            if (this.iscomplete) {
+                let rightNumber = 0;
+                let wrongNumber = 0;
+                let cacheData = cache.get("resultData") || null;
+                let data = JSON.parse(cacheData) || [];
+                this.answerNumber = data.length || 1;
+                data.forEach((item) => {
+                    if (item.isCurrent === true) {
+                        rightNumber++;
+                    } else if (item.isCurrent === false) {
+                        wrongNumber++;
                     }
-                }
-            })
+                });
+                this.wrongWordsList = cache.get("wrongList") || [];
+                this.wrongNumber = wrongNumber;
+                this.rightNumber = rightNumber;
+
+            } else {
+
+                apiCall.post("/TKT/answerList", {
+                    practicType: this.practicType,
+                    batchId: batchId
+                }).then((data) => {
+                    cache.set("batchId", data.batchId);
+                    for (let item of data.answerlist) {
+                        if (item.type == 1) {
+                            let temp = {};
+                            item.answers.forEach((res, index) => {
+                                if (temp[res.module]) {
+                                    temp[res.module] += temp[res.module]
+                                } else {
+                                    temp[res.module] = 1;
+                                }
+                                for (let options of res.options) {
+                                    if (res.currectOption === options.option) {
+                                        item.answers[index].meaning = options.meaning
+                                    }
+                                }
+                            });
+                            this.newWord = item.answers;
+                            this.module = temp
+                        }
+                    }
+                })
+            }
         },
         mounted() {
 
         },
         methods: {
-            isFinish: function (data,wrongList) {
+            isFinish: function (data, wrongList) {
+                let iscomplete = cache.get("iscomplete") || true;
+
                 let cacheWrong = cache.get("wrongList") || [];
                 this.wrongWordsList = wrongList || cacheWrong;
-                if (cacheWrong.length === 0 ) {
-                    cache.set("wrongList", wrongList);
-                }
 
                 let rightNumber = 0;
                 let wrongNumber = 0;
@@ -122,6 +151,12 @@
                 data = data || JSON.parse(cacheData) || [];
                 if (!cacheData) {
                     cache.set("resultData", data);
+                }
+                if (cacheWrong.length === 0) {
+                    cache.set("wrongList", wrongList);
+                }
+                if (!cache.get("iscomplete")) {
+                    cache.set("iscomplete", true);
                 }
                 this.answerNumber = data.length || 1;
                 data.forEach((item) => {
@@ -133,10 +168,10 @@
                 });
                 this.wrongNumber = wrongNumber;
                 this.rightNumber = rightNumber;
-                this.iscomplete = true
+                this.iscomplete = iscomplete
             },
-            goHomePage(){
-                this.$router.push({path:"index"})
+            goHomePage() {
+                this.$router.push({path: "index"})
             }
 
         },
@@ -152,7 +187,8 @@
         height: 100%;
         background: #EFEFF4;
     }
-    .btn{
+
+    .btn {
         background: #FFE034;
         box-shadow: 0 8px 20px 0 rgba(255, 224, 52, 0.65);
         border-radius: 80px;
@@ -175,7 +211,7 @@
         padding: 0 30px;
         width: 750px;
         height: 240px;
-        box-shadow: 0 12px 12px 0 rgba(166,166,166,0.12);
+        box-shadow: 0 12px 12px 0 rgba(166, 166, 166, 0.12);
         .title {
             line-height: 1;
             padding-top: 60px;
@@ -192,28 +228,30 @@
             justify-content: space-between;
         }
     }
-    .wrongWordsList{
+
+    .wrongWordsList {
         padding: 44px 30px 0 30px;
-        .title{
+        .title {
             font-size: 32px;
             padding-bottom: 44px;
         }
     }
-    .wordsBox{
+
+    .wordsBox {
         font-size: 32px;
         color: #8E8E93;
         margin-bottom: 24px;
-        .word{
+        .word {
             display: flex;
             align-items: center;
-            >div{
+            > div {
                 margin-right: 28px;
             }
-            .name{
+            .name {
                 color: #000;
             }
         }
-        .tips{
+        .tips {
             margin-top: 10px;
             display: flex;
             align-items: center;

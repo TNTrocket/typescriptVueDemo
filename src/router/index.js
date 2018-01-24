@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import {cache} from 'util/global'
+import {MessageBox} from 'mint-ui';
 
 
 let routes, router;
@@ -64,8 +65,17 @@ routes = [
 router = new Router({
     routes
 });
-// router.beforeEach((to, from, next) => {
-//     document.title = to.meta.title;
-//     next()
-// });
+router.beforeEach((to, from, next) => {
+    if(to.name!=="login" && from.name!=="login"){
+      if(!cache.get("token")){
+          MessageBox.alert('会话过期').then(action => {
+              next({path: '/login'});
+          });
+
+          return
+      }
+    }
+    // document.title = to.meta.title;
+    next()
+});
 export default router;

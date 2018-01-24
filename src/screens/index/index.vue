@@ -76,7 +76,7 @@
     import first from "./first.vue"
     import {mapState, mapActions, mapMutations, mapGetters} from 'vuex'
     import {cache} from 'util/global'
-    import {Indicator} from 'mint-ui';
+    import {Indicator, MessageBox} from 'mint-ui';
 
     export default {
         data() {
@@ -112,6 +112,7 @@
         },
         methods: {
             startRecite() {
+                cache.remove("isReciteComplete");
                 this.$router.push({path: "recite"})
             },
             goPracticed(module) {

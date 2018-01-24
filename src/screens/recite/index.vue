@@ -1,7 +1,7 @@
 <template>
     <div :class="$style.Rwapper">
-        <answer :word="wrongWord" title="错词复习" v-if="wrongWord.length!==0 && !iscomplete" :isFinish="isFinish"></answer>
-        <div v-else-if="iscomplete ">
+        <answer :word="wrongWord" title="错词复习" :noKnowBtn="true" v-if="wrongWord.length!==0 && !isReciteComplete" :isFinish="isFinish"></answer>
+        <div v-else-if="isReciteComplete ">
             <div :class="$style.review" v-show="wrongWord.length!==0">
                 <div>
                     <p>复习完成！</p>
@@ -34,7 +34,7 @@
             </div>
             <div :class="$style.startTraning" @click="startTraning">开始练习</div>
         </div>
-        <div v-else-if="!iscomplete ">
+        <div v-else-if="!isReciteComplete ">
             <toast></toast>
         </div>
     </div>
@@ -53,7 +53,7 @@
                 wrongWord: [],
                 newWord: [],
                 module: {},
-                iscomplete: false
+                isReciteComplete: false
             }
         },
         created() {
@@ -61,11 +61,14 @@
 
         },
         mounted() {
-            let batchId = cache.get("batchId") || "";
+            this.isReciteComplete = cache.get("isReciteComplete") || false;
+//            let batchId = cache.get("batchId") || "";
+            Indicator.open();
             apiCall.post("/TKT/answerList", {
                 practicType: 0,
-                batchId: batchId
+//                batchId: batchId
             }).then((data) => {
+                Indicator.close();
                 cache.set("batchId", data.batchId);
                 for (let item of data.answerlist) {
                     if (item.type == 1) {
@@ -100,9 +103,18 @@
         },
         methods: {
             isFinish() {
-                this.iscomplete = true
+                let isReciteComplete = cache.get("isReciteComplete") || true;
+                if (!cache.get("isReciteComplete")) {
+                    cache.set("isReciteComplete", true);
+                }
+                this.isReciteComplete = isReciteComplete
             },
             startTraning(){
+//                cache.remove("batchId");
+                cache.remove("iscomplete");
+                cache.remove("resultData");
+                cache.remove("wrongList");
+
                 this.$router.push({path:"result"})
             }
         }

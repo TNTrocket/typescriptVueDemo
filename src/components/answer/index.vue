@@ -46,14 +46,23 @@
             <div :class="$style.prev" v-if="currentAnswer!==0" @click="goPrev">
                 <div><span :class="$style.prevArrow"></span>上一个</div>
             </div>
-            <div :class="$style.btn" @click="respondence">
+            <div :class="$style.btn" @click="respondence"
+                 v-if="!noKnowBtn && !isNeedDelete && respondenceList[currentAnswer].isCurrent !==false">
                 不认识
             </div>
+            <div :class="$style.btn"
+                 v-else-if="!noKnowBtn && !isNeedDelete && !respondenceList[currentAnswer].isCurrent">
+                已加入错词本
+            </div>
+            <div :class="$style.btn" @click="deleteWrong" v-else-if="isNeedDelete">
+                删除
+            </div>
+            <div v-else-if="currentAnswer>0" :class="$style.broder"></div>
             <div :class="$style.next" @click="goNext" v-if="currentAnswer+1!==respondenceList.length">
                 <div>下一个<span :class="$style.nextArrow"></span></div>
             </div>
             <div v-else @click="finish">
-                <div>完成</div>
+                <div>完成<span :class="$style.nextArrow"></span></div>
             </div>
         </div>
     </div>
@@ -62,7 +71,7 @@
 <script>
     import apiCall from 'util/xhr'
     import {cache} from 'util/global'
-    import {Indicator} from 'mint-ui';
+    import {Indicator,MessageBox} from 'mint-ui';
 
     export default {
         props: {
@@ -75,6 +84,14 @@
                 type: Function,
                 default: () => {
                 }
+            },
+            noKnowBtn:{
+                type: Boolean,
+                default: false
+            },
+            isNeedDelete:{
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -83,7 +100,8 @@
                 currentAnswer: 0,
                 respondenceList: [],
                 currentMeaning: '',
-                wrongWordsList:[]
+                wrongWordsList:[],
+                respondenceListLength:0
             }
         },
         created() {
@@ -92,6 +110,7 @@
                 let temp = {};
                 this.respondenceList.push(temp)
             }
+            this.respondenceListLength = this.respondenceList.length
         },
         mounted() {
             let target = this.currentList.options || [];
@@ -117,11 +136,14 @@
             currentList: function () {
                 return this.answerList[this.currentAnswer] || {}
             },
-            wordId: function () {
-                return this.answerList[this.currentAnswer].wordId || ""
+            questionId: function () {
+                return this.answerList[this.currentAnswer].questionId || ""
             },
             Pos: function () {
-                return this.answerList[this.currentAnswer].POS || ""
+                return this.answerList[this.currentAnswer].pos || ""
+            },
+            currectOptionId:function () {
+                return this.answerList[this.currentAnswer].currectOptionId || ""
             }
         },
         methods: {
@@ -131,7 +153,7 @@
                 if (!isAnswer) {
                     let tempObj = {
                         isAnswer: true,
-                        wordId: this.wordId,
+                        questionId: this.questionId,
                     };
                     if (data.option === this.currentList.currectOption) {
                         tempObj.isCurrent = true;
@@ -140,13 +162,11 @@
                         tempObj.index = index;
                         this.wrongWordsList.push(this.currentList)
                     }
-                    Indicator.open({
-                        spinnerType: 'fading-circle'
-                    });
+                    Indicator.open();
                     apiCall.post("/TKT/feedbackList", {
                         feedbackList: [{
                             isCurrent: tempObj.isCurrent ? 1 : 0,
-                            wordId: this.wordId,
+                            questionId: this.questionId,
                             finalChoice: data.option
                         }]
                     }).then(() => {
@@ -178,6 +198,27 @@
             },
             finish: function () {
                 this.isFinish(this.respondenceList,this.wrongWordsList);
+            },
+            deleteWrong () {
+                Indicator.open();
+                apiCall.post("/TKT/deleteWrongWordList",{
+                    feedbackList:[{
+                        batchId: cache.get("batchId"),
+                        wordId: this.currectOptionId,
+                        delete:1
+                    }]
+                }).then(()=>{
+                    Indicator.close();
+//                    this.answerList.splice(this.currentAnswer,1);
+                    this.$delete(this.respondenceList, this.currentAnswer);
+                    this.$delete(this.answerList, this.currentAnswer);
+                    if(this.currentAnswer+1 === this.respondenceListLength){
+                        this.finish();
+                    }else{
+                        this.respondenceListLength = this.respondenceListLength-1;
+                    }
+//                    delete this.answerList[this.currentAnswer]
+                })
             }
         },
 
@@ -209,6 +250,12 @@
             font-size: 28px;
             color: #8E8E93;
         }
+    }
+    .broder{
+        width: 2px;
+        height: 100%;
+        flex: none!important;
+        background: #D1D1D6;
     }
 
     .name {

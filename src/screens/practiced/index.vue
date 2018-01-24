@@ -105,6 +105,9 @@
             },
             goResult:function () {
                 cache.remove("batchId");
+                cache.remove("iscomplete");
+                cache.remove("resultData");
+                cache.remove("wrongList");
                 this.$router.push({path:"practicedResult"});
             }
         }

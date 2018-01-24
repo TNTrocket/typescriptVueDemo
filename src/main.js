@@ -8,8 +8,8 @@ import store from "./store/index"
 import vuescroll from 'vue-scroll'
 import Vue2Touch from 'vue2-touch'
 
-Vue.use(Vue2Touch)
-Vue.use(vuescroll)
+Vue.use(Vue2Touch);
+Vue.use(vuescroll);
 
 
 if (process.env.NODE_ENV === "production") {

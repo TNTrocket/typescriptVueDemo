@@ -58,6 +58,8 @@
                             password: this.$refs.password.value,
                         }).then(()=>{
                             this.$router.push({path: 'index'})
+                        },()=>{
+                            console.log("fff");
                         });
                         return;
                     }

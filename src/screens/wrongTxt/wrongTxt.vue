@@ -48,7 +48,7 @@
                 type,
                 module
             }).then((data) => {
-              this.wrongWordList = data.wrongWordList
+                this.wrongWordList = data.wrongWordList;
                 Indicator.close();
             });
         },
@@ -59,8 +59,8 @@
         },
         methods: {
             onScroll:function (e,position) {
-                let module2Top = document.querySelector(".module2").offsetTop
-                let module3Top = document.querySelector(".module3").offsetTop
+                let module2Top = document.querySelector(".module2").offsetTop;
+                let module3Top = document.querySelector(".module3").offsetTop;
                 if (position.scrollTop >= module2Top) {
                    this.moduleName ="module2"
                 }else if (position.scrollTop >= module3Top) {
@@ -72,6 +72,9 @@
             },
             goResult:function () {
                 cache.remove("batchId");
+                cache.remove("iscomplete");
+                cache.remove("resultData");
+                cache.remove("wrongList");
                 this.$router.push({path:"wrongResult"});
             }
         }

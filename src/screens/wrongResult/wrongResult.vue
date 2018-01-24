@@ -1,5 +1,5 @@
 <template>
-    <result :practicType="practicType" resultTitle="错题复习"></result>
+    <result :practicType="practicType" resultTitle="错题复习" :isNeedDelete="isNeedDelete"></result>
 </template>
 
 <script>
@@ -8,7 +8,8 @@
     export default {
         data() {
             return {
-                practicType:2
+                practicType:2,
+                isNeedDelete:true
             }
         },
         created() {

@@ -16,6 +16,7 @@
 
 <script>
     import apiCall from 'util/xhr'
+    import {cache} from 'util/global'
 
     export default {
 //        data() {
@@ -31,7 +32,8 @@
         },
         methods: {
             startRecite: function () {
-              this.$router.push({path:"recite"})
+                cache.remove("isReciteComplete");
+                this.$router.push({path: "recite"})
             }
         }
     }
@@ -50,19 +52,20 @@
         letter-spacing: -0.11px;
         line-height: 64px;
         text-shadow: 0 4px 8px #512992;
-        .tips{
+        .tips {
             margin-top: 62px;
         }
-        .icon{
+        .icon {
             width: 32px;
             height: 32px;
             display: inline-block;
         }
     }
-    .btn{
+
+    .btn {
         margin: 106px auto 0 auto;
         background: #FFE034;
-        box-shadow: 0 4px 10px 0 rgba(255,224,52,0.65);
+        box-shadow: 0 4px 10px 0 rgba(255, 224, 52, 0.65);
         border-radius: 80px;
         width: 560px;
         height: 140px;
