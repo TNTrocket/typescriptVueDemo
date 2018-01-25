@@ -25,7 +25,7 @@ routes = [
     {
         path: '/login',
         name: 'login',
-        component: () => import('screens/login/index')
+        component: () => import('screens/login/login')
     },
     {
         path: '/index',
@@ -35,17 +35,17 @@ routes = [
     {
         path: '/recite',
         name: 'recite',
-        component: () => import('screens/recite/index')
+        component: () => import('screens/recite/recite')
     },
     {
         path: '/result',
         name: 'result',
-        component: () => import('screens/result/index')
+        component: () => import('screens/result/result')
     },
     {
         path: '/practiced',
         name: 'practiced',
-        component: () => import('screens/practiced/index')
+        component: () => import('screens/practiced/practiced')
     },
     {
         path: '/practicedResult',
@@ -76,7 +76,6 @@ router.beforeEach((to, from, next) => {
               closeOnClickModal:false
           }).then(action => {
               if(action === "confirm"){
-                  debugger
                   next({path: '/login'});
               }
 

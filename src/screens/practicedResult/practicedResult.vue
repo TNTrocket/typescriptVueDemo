@@ -3,7 +3,7 @@
 </template>
 
 <script>
-   import result from '../result/index'
+   import result from '../result/result'
 
     export default {
         data() {
