@@ -125,6 +125,8 @@
     .Rwapper {
         height: 100%;
         background: #EFEFF4;
+        overflow-y: scroll;
+        padding-bottom: 200px;
     }
 
     .review {

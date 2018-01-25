@@ -13,7 +13,8 @@ export default {
       cache.set("isNew",data.isNew);
   },
     [types.CHANGESTATUS] (state, data) {
-        Vue.set(state.user, "isNew", data.isNew);
-        cache.set("isNew",data.isNew);
+        let cacheIsNew = cache.get("isNew");
+        let isNew = data.isNew || cacheIsNew;
+        Vue.set(state.user, "isNew", isNew);
     }
 }

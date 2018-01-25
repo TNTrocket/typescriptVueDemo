@@ -33,8 +33,8 @@
         },
         methods: {
             startRecite: function () {
-                this.changeStatus({isNew:"N"});
                 cache.set("isNew","N");
+                this.changeStatus({isNew:"N"});
                 cache.remove("isReciteComplete");
                 this.$router.push({path: "recite"})
             },

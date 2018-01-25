@@ -68,6 +68,9 @@
                 </div>
             </div>
         </div>
+        <div v-else>
+            <toast></toast>
+        </div>
     </div>
 </template>
 
@@ -77,6 +80,7 @@
     import {mapState, mapActions, mapMutations, mapGetters} from 'vuex'
     import {cache} from 'util/global'
     import {Indicator, MessageBox} from 'mint-ui';
+    import toast from 'components/toast/Toast';
 
     export default {
         data() {
@@ -93,25 +97,28 @@
 
         },
         mounted() {
-            Indicator.open();
-            apiCall.post("/TKT/TKTOverview").then((data) => {
-                this.practicedNo = data.practicedNo;
-                this.totalNo = data.totalNo;
-                this.practiced = data.practiced;
-                this.wrongWordModules = data.wrongWordModules;
-                this.wrongWordNo = data.wrongWordNo;
-                this.isDone = this.practicedNo === this.totalNo;
-                cache.set("totalNo",this.totalNo);
-                cache.set("practicedNo",this.practicedNo);
-                cache.set("wrongWordNo",this.wrongWordNo);
-                Indicator.close();
-            })
-        },
-        updated() {
-            console.log(this.isNew)
+            this.changeStatus({});
+            if (this.isNew === "Y") {
+
+            } else if (this.isNew === "N") {
+                Indicator.open();
+                apiCall.post("/TKT/TKTOverview").then((data) => {
+                    this.practicedNo = data.practicedNo;
+                    this.totalNo = data.totalNo;
+                    this.practiced = data.practiced;
+                    this.wrongWordModules = data.wrongWordModules;
+                    this.wrongWordNo = data.wrongWordNo;
+                    this.isDone = this.practicedNo === this.totalNo;
+                    cache.set("totalNo", this.totalNo);
+                    cache.set("practicedNo", this.practicedNo);
+                    cache.set("wrongWordNo", this.wrongWordNo);
+                    Indicator.close();
+                })
+            }
         },
         components: {
-            first
+            first,
+            toast
         },
         methods: {
             startRecite() {
@@ -119,21 +126,26 @@
                 this.$router.push({path: "recite"})
             },
             goPracticed(module) {
-                this.$router.push({path: "practiced",query:{
-                    type:0,
-                    module: module
-                }})
+                this.$router.push({
+                    path: "practiced", query: {
+                        type: 0,
+                        module: module
+                    }
+                })
             },
-            gowrongTxt(type,module){
-                this.$router.push({path: "wrongTxt",query:{
-                    type,
-                    module: module
-                }})
+            gowrongTxt(type, module) {
+                this.$router.push({
+                    path: "wrongTxt", query: {
+                        type,
+                        module: module
+                    }
+                })
             },
-            again(){
-                apiCall.post("/TKT/replay").then(()=>{
-                   this.changeStatus({isNew:"Y"});
-                   cache.set("isNew","Y");
+            again() {
+                apiCall.post("/TKT/replay").then(() => {
+                    cache.set("isNew", "Y");
+                    this.changeStatus({isNew: "Y"});
+
                 })
             },
             ...mapActions({
@@ -143,8 +155,8 @@
         },
         computed: {
             ...mapState({
-                isNew: state =>{
-                    return cache.get("isNew") || state.user.isNew
+                isNew: state => {
+                    return state.user.isNew
                 }
             }),
         },
