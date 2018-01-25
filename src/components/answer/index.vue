@@ -1,7 +1,7 @@
 <template>
     <div :class="$style.wrapper">
         <div :class="$style.headerBox" v-touch:swipe="handle">
-            <div  :class="$style.headerBox">
+            <div :class="$style.headerBox">
                 <div :class="$style.header">
                     <div :class="$style.box">
                         <div :class="$style.title">
@@ -46,7 +46,7 @@
             <div :class="$style.prev" v-if="currentAnswer!==0" @click="goPrev">
                 <div><span :class="$style.prevArrow"></span>上一个</div>
             </div>
-            <div :class="$style.btn" @click="respondence"
+            <div :class="$style.btn" @click="unKnow"
                  v-if="!noKnowBtn && !isNeedDelete && respondenceList[currentAnswer].isCurrent !==false">
                 不认识
             </div>
@@ -71,7 +71,7 @@
 <script>
     import apiCall from 'util/xhr'
     import {cache} from 'util/global'
-    import {Indicator,MessageBox} from 'mint-ui';
+    import {Indicator, MessageBox} from 'mint-ui';
 
     export default {
         props: {
@@ -85,13 +85,17 @@
                 default: () => {
                 }
             },
-            noKnowBtn:{
+            noKnowBtn: {
                 type: Boolean,
                 default: false
             },
-            isNeedDelete:{
+            isNeedDelete: {
                 type: Boolean,
                 default: false
+            },
+            wordType: {
+                type: Number,
+                default: 1
             }
         },
         data() {
@@ -100,8 +104,8 @@
                 currentAnswer: 0,
                 respondenceList: [],
                 currentMeaning: '',
-                wrongWordsList:[],
-                respondenceListLength:0
+                wrongWordsList: [],
+                respondenceListLength: 0
             }
         },
         created() {
@@ -125,20 +129,19 @@
             Pos: function () {
                 return this.answerList[this.currentAnswer].pos || ""
             },
-            currectOptionId:function () {
+            currectOptionId: function () {
                 return this.answerList[this.currentAnswer].currectOptionId || ""
             }
         },
-        watch:{
-            currentAnswer:function () {
+        watch: {
+            currentAnswer: function () {
                 this.keepStatus();
             }
         },
         methods: {
-            respondence: function (data, index) {
+            respondence(data, index,unknow) {
                 let finalOption = this.currentList.finalOption;
-                let isAnswer = finalOption ? finalOption : this.respondenceList[this.currentAnswer].isAnswer
-                console.log(isAnswer)
+                let isAnswer = finalOption ? finalOption : this.respondenceList[this.currentAnswer].isAnswer;
                 if (!isAnswer) {
                     let tempObj = {
                         isAnswer: true,
@@ -146,7 +149,7 @@
                     };
                     if (data.option === this.currentList.currectOption) {
                         tempObj.isCurrent = true;
-                    } else {
+                    } else  {
                         tempObj.isCurrent = false;
                         tempObj.index = index;
                         this.wrongWordsList.push(this.currentList)
@@ -156,76 +159,116 @@
                         feedbackList: [{
                             isCurrent: tempObj.isCurrent ? 1 : 0,
                             questionId: this.questionId,
-                            finalChoice: data.option
+                            finalChoice: data.option,
+                            type: this.wordType
                         }]
                     }).then(() => {
                         Indicator.close();
                         this.$set(this.respondenceList, this.currentAnswer, tempObj)
+                    },()=>{
+                        Indicator.close();
+                        MessageBox({
+                            message:"答案提交失败，请检查网络后再试一次",
+                            showConfirmButton: true,
+                            title:"",
+                            confirmButtonText:"确认",
+                            closeOnClickModal:false
+                        });
                     });
                 }
             },
-            goNext: function () {
+            unKnow() {
+             this.respondence({option:"E"});
+            },
+            goNext() {
                 this.currentAnswer = this.currentAnswer + 1;
             },
-            goPrev: function () {
+            goPrev() {
                 this.currentAnswer = this.currentAnswer - 1;
             },
-            handle: function (type) {
-               switch (type){
-                   case "swipeleft":
-                       if (this.currentAnswer + 1 !== this.respondenceList.length) {
-                           this.currentAnswer = this.currentAnswer + 1;
-                       }
-                       break;
-                   case "swiperight":
-                       if (this.currentAnswer !== 0) {
-                           this.currentAnswer = this.currentAnswer - 1;
-                       }
-               }
+            handle(type) {
+                switch (type) {
+                    case "swipeleft":
+                        if (this.currentAnswer + 1 !== this.respondenceList.length) {
+                            this.currentAnswer = this.currentAnswer + 1;
+                        }
+                        break;
+                    case "swiperight":
+                        if (this.currentAnswer !== 0) {
+                            this.currentAnswer = this.currentAnswer - 1;
+                        }
+                }
 
             },
-            finish: function () {
-                this.isFinish(this.respondenceList,this.wrongWordsList);
+            finish() {
+                this.isFinish(this.respondenceList, this.wrongWordsList);
             },
-            deleteWrong () {
-                Indicator.open();
-                apiCall.post("/TKT/deleteWrongWordList",{
-                    feedbackList:[{
-                        batchId: cache.get("batchId"),
-                        wordId: this.currectOptionId,
-                        delete:1
-                    }]
-                }).then(()=>{
-                    Indicator.close();
-//                    this.answerList.splice(this.currentAnswer,1);
-                    this.$delete(this.respondenceList, this.currentAnswer);
-                    this.$delete(this.answerList, this.currentAnswer);
-                    if(this.currentAnswer+1 === this.respondenceListLength){
-                        this.finish();
+            deleteWrong() {
+                MessageBox({
+                    message:"确定要从错词本删除它？",
+                    showConfirmButton: true,
+                    showCancelButton:true,
+                    title:"",
+                    cancelButtonText:"取消",
+                    confirmButtonText:"删除",
+                    closeOnClickModal:false
+                }).then(action => {
+                    if(action === "cancel"){
+
                     }else{
-                        this.respondenceListLength = this.respondenceListLength-1;
+
+                        Indicator.open();
+                        apiCall.post("/TKT/deleteWrongWordList", {
+                            feedbackList: [{
+                                batchId: cache.get("batchId"),
+                                wordId: this.currectOptionId,
+                                delete: 1
+                            }]
+                        }).then(() => {
+                            Indicator.close();
+
+                            this.$delete(this.respondenceList, this.currentAnswer);
+                            this.$delete(this.answerList, this.currentAnswer);
+                            if (this.currentAnswer + 1 === this.respondenceListLength) {
+                                this.finish();
+                            } else {
+                                this.respondenceListLength = this.respondenceListLength - 1;
+                            }
+
+                        },()=>{
+                            Indicator.close();
+                            MessageBox({
+                                message:"答案提交失败，请检查网络后再试一次",
+                                showConfirmButton: true,
+                                title:"",
+                                confirmButtonText:"确认",
+                                closeOnClickModal:false
+                            });
+                        })
+
                     }
-//                    delete this.answerList[this.currentAnswer]
-                })
+
+                });
+
             },
-            keepStatus(){
+            keepStatus() {
                 let target = this.currentList.options || [];
                 let wrongChoice = "";
                 let wrongIndex = 0;
-                target.forEach((item,index)=>{
+                target.forEach((item, index) => {
                     if (item.option === this.currentList.currectOption) {
                         this.currentMeaning = item.meaning;
                     }
-                    else if(this.currentList.finalOption && this.currentList.finalOption === item.option ){
+                    else if (this.currentList.finalOption && this.currentList.finalOption === item.option) {
                         wrongChoice = item.option;
                         wrongIndex = index;
                     }
                 });
-                if (this.currentList.finalOption === this.currentList.currectOption) {
-                    this.$set(this.respondenceList[this.currentAnswer],"isAnswer",true)
-                }else if(this.currentList.finalOption && this.currentList.finalOption!== this.currentList.currectOption){
-                    this.$set(this.respondenceList[this.currentAnswer],"isAnswer",true);
-                    this.$set(this.respondenceList[this.currentAnswer],"index",wrongIndex)
+                if (this.currentList.finalOption === this.currentList.currectOption || this.currentList.finalOption ==="E") {
+                    this.$set(this.respondenceList[this.currentAnswer], "isAnswer", true)
+                } else if (this.currentList.finalOption && this.currentList.finalOption !== this.currentList.currectOption) {
+                    this.$set(this.respondenceList[this.currentAnswer], "isAnswer", true);
+                    this.$set(this.respondenceList[this.currentAnswer], "index", wrongIndex)
                 }
             }
         },
@@ -259,10 +302,11 @@
             color: #8E8E93;
         }
     }
-    .broder{
+
+    .broder {
         width: 2px;
         height: 100%;
-        flex: none!important;
+        flex: none !important;
         background: #D1D1D6;
     }
 

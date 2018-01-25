@@ -30,7 +30,7 @@ Mock.mock(/ntce-c\/TKT\/answerList/, 'post', function (options) {
                         'module': "module1",		 //module1、module2、module3……
                         'currectOption': 'A', //正确答案
                         'word': '纷纷', //单词
-                        'finalOption':'C', //最终选择答案  可能为空，为空则是没有做
+                        'finalOption':'A', //最终选择答案  可能为空，为空则是没有做
                         'phonogram':'[xxx]',//音标
                         'wordId':'@id', //题目ID
                          'pos':'adj.',

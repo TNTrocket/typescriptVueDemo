@@ -2,7 +2,7 @@
     <div :class="$style.resultWrapper">
         <answer :word="this.newWord" v-if="this.newWord.length!==0 && !iscomplete"
                 :title="resultTitle" :isFinish="isFinish" :noKnowBtn="noKnowBtn"
-                :isNeedDelete="isNeedDelete"
+                :isNeedDelete="isNeedDelete" :wordType="0"
         ></answer>
         <div v-else-if="iscomplete">
             <div :class="$style.resultBox">
@@ -28,7 +28,7 @@
                 </div>
             </div>
             <div :class="$style.delete" v-show="rightNumber">
-                <span>删除本次答对的单词</span>
+                <span @click="deleteWrongWordList">删除本次答对的单词</span>
                 <span :class="$style.deleteArrow"></span>
             </div>
             <div :class="$style.wrongWordsList">
@@ -62,7 +62,7 @@
     import answer from 'components/answer/index'
     import toast from 'components/toast/Toast'
     import {cache} from 'util/global'
-    import {Indicator} from 'mint-ui';
+    import {Indicator, MessageBox} from 'mint-ui';
 
     export default {
         props: {
@@ -92,7 +92,8 @@
                 totalNo: 0,
                 practicedNo: 0,
                 wrongWordNo: 0,
-                originAnswerNumber:0
+                originAnswerNumber: 0,
+                deleteWordList: []
             }
         },
         created() {
@@ -103,9 +104,9 @@
             this.iscomplete = cache.get("iscomplete") || "";
             let {practicType = "", module = ""} = this.$route.query;
 
-            if(this.iscomplete){
+            if (this.iscomplete) {
                 this.isFinish();
-            }else {
+            } else {
                 apiCall.post("/TKT/answerList", {
                     practicType: practicType,
                     batchId: batchId,
@@ -128,7 +129,7 @@
                                 }
                             });
                             this.newWord = item.answers;
-                            this.module = temp
+                            this.module = temp;
                             this.originAnswerNumber = item.answers.length;
                         }
                     }
@@ -160,9 +161,13 @@
                             let tempArray = [];
                             let rightNumber = 0;
                             let wrongNumber = 0;
+                            let deleteList = [];
+                            let deleteObj = {};
                             item.answers.forEach((res, index) => {
                                 if (res.currectOption === res.finalOption) {
                                     rightNumber++
+                                    deleteObj.wordId = item.questionId;
+                                    deleteObj.delete = "1";
                                 } else if (res.finalOption) {
                                     wrongNumber++;
                                     for (let options of res.options) {
@@ -172,13 +177,15 @@
                                     }
                                     tempArray.push(res);
                                 }
+                                deleteList.push(deleteObj);
                             });
+                            this.deleteWordList = deleteList;
                             this.rightNumber = rightNumber;
                             this.wrongNumber = wrongNumber;
                             this.answerNumber = item.answers.length;
                             this.wrongWordsList = tempArray;
-                            if(this.originAnswerNumber>this.answerNumber){
-                                this.wrongWordNo =this.wrongWordNo-(this.originAnswerNumber-this.answerNumber)
+                            if (this.originAnswerNumber > this.answerNumber) {
+                                this.wrongWordNo = this.wrongWordNo - (this.originAnswerNumber - this.answerNumber)
                             }
                         }
                     }
@@ -186,6 +193,32 @@
             },
             goHomePage() {
                 this.$router.push({path: "index"})
+            },
+            deleteWrongWordList() {
+                MessageBox({
+                    message: `确定要从错词本删除这${this.deleteWordList.length}个单词吗？`,
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    title: "",
+                    cancelButtonText: "取消",
+                    confirmButtonText: "删除",
+                    closeOnClickModal: false
+                }).then(action => {
+                    if (action === "cancel") {
+
+                    } else {
+                        Indicator.open();
+                        apiCall.post("/TKT/deleteWrongWordList", {
+                            batchId: cache.get("batchId") || "",
+                            feedbackList: this.deleteWordList
+                        }).then(() => {
+                            
+                            Indicator.close();
+                        })
+
+                    }
+
+                });
             }
 
         },
@@ -203,23 +236,24 @@
         overflow-y: scroll;
         padding-bottom: 200px;
     }
-    .delete{
+
+    .delete {
         font-size: 32px;
         color: #5E3F8B;
         margin-top: 44px;
         text-align: center;
-        >span{
+        > span {
             display: inline-block;
             vertical-align: middle;
         }
-       .deleteArrow{
-           background: url("../../img/indexDoneArrow.png");
-           width: 16px;
-           height: 28px;
-           margin-left: 10px;
-           background-size: 100% 100%;
+        .deleteArrow {
+            background: url("../../img/indexDoneArrow.png");
+            width: 16px;
+            height: 28px;
+            margin-left: 10px;
+            background-size: 100% 100%;
 
-       }
+        }
     }
 
     .btn {

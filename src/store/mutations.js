@@ -4,7 +4,6 @@ import {cache} from 'util/global'
 
 export default {
 
-
   [types.LOGIN] (state, data) {
       Vue.set(state, "user", {
           ...data

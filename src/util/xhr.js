@@ -13,10 +13,15 @@ axios.interceptors.response.use(function ({data, config, status}) {
         if (data.code === 10000) {
             return Promise.resolve(data.data);
         }else if(data.code === 10101){
-            MessageBox("提示","fefef");
             return Promise.reject(data.msg);
         }else if(data.code === 99999){
-            MessageBox("提示"," 服务异常，请稍后再试");
+            MessageBox({
+                message:"服务异常，请稍后再试",
+                showConfirmButton: true,
+                title:"",
+                confirmButtonText:"确认",
+                closeOnClickModal:false
+            });
             return Promise.reject(data);
         }
         else {

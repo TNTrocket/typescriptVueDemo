@@ -23,9 +23,45 @@ body, button, input, select, textarea {
 :global(.mint-indicator-wrapper){
   width: 200px;
 }
-//:global{
-//  .mint-msgbox{
-//    background: rgba(248,248,248,0.82);
-//    border-radius: 28px;
-//  }
-//}
+:global{
+  .mint-msgbox{
+    background: rgba(248,248,248,0.7);
+    border-radius: 28px;
+    width: 540px;
+    height: 280px;
+  }
+  .mint-msgbox-btns{
+    height: 100px;
+  }
+  .mint-msgbox-btn{
+    background: rgba(248,248,248,0.82);
+  }
+  .mint-msgbox-content{
+    padding: 0 40px;
+    background: rgba(248,248,248,0.82);
+    border-bottom: 1px solid #3F3F3F;
+    font-size: 30px;
+    color: #323744;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mint-msgbox-message{
+    color: #323744;
+    line-height: 40px;
+  }
+  .mint-msgbox-cancel{
+    font-size: 34px;
+    color: #7D879B;
+    border-right: 1px solid #3F3F3F;
+  }
+  .mint-msgbox-confirm{
+    font-size: 34px;
+    color: #5E3F8B;
+  }
+  .mint-msgbox-confirm:active{
+    color: #5E3F8B;
+    background: rgba(248,248,248,0.82);
+  }
+}

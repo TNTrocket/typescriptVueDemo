@@ -29,6 +29,7 @@
 <script>
     import apiCall from 'util/xhr'
     import {mapState, mapActions, mapMutations, mapGetters} from 'vuex'
+    import {Indicator, MessageBox} from 'mint-ui';
 
 
     export default {
@@ -53,13 +54,22 @@
                     password: this.$refs.password.value
                 }).then((result) => {
                     if (result) {
+                        Indicator.open();
                         this.dispatchLogin({
                             mobile: this.$refs.phone.value,
                             password: this.$refs.password.value,
                         }).then(()=>{
+                            Indicator.close();
                             this.$router.push({path: 'index'})
                         },()=>{
-                            console.log("fff");
+                            Indicator.close();
+                            MessageBox({
+                                message:"手机号或密码错误",
+                                showConfirmButton: true,
+                                title:"",
+                                confirmButtonText:"确认",
+                                closeOnClickModal:false
+                            });
                         });
                         return;
                     }

@@ -68,8 +68,18 @@ router = new Router({
 router.beforeEach((to, from, next) => {
     if(to.name!=="login" && from.name!=="login"){
       if(!cache.get("token")){
-          MessageBox.alert('会话过期').then(action => {
-              next({path: '/login'});
+          MessageBox({
+              message:"会话过期",
+              showConfirmButton: true,
+              title:"",
+              confirmButtonText:"确认",
+              closeOnClickModal:false
+          }).then(action => {
+              if(action === "confirm"){
+                  debugger
+                  next({path: '/login'});
+              }
+
           });
 
           return

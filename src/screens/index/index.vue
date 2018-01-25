@@ -142,9 +142,26 @@
                 })
             },
             again() {
+                Indicator.open();
                 apiCall.post("/TKT/replay").then(() => {
-                    cache.set("isNew", "Y");
-                    this.changeStatus({isNew: "Y"});
+                    Indicator.close();
+                    MessageBox({
+                        message:"已练习将会清空，错词本会保留。确定要重头再来吗？",
+                        showConfirmButton: true,
+                        showCancelButton:true,
+                        title:"",
+                        cancelButtonText:"取消",
+                        confirmButtonText:"确认",
+                        closeOnClickModal:false
+                    }).then(action => {
+                        if(action === "cancel"){
+
+                        }else{
+                            cache.set("isNew", "Y");
+                            this.changeStatus({isNew: "Y"});
+                        }
+
+                    });
 
                 })
             },
@@ -180,7 +197,7 @@
             width: 750px;
             height: 300px;
             background: #fff;
-            z-index: 9999;
+            z-index: 999;
             bottom: 0;
             display: flex;
             align-items: center;

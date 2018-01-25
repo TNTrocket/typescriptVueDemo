@@ -1,6 +1,7 @@
 <template>
     <div :class="$style.Rwapper">
-        <answer :word="wrongWord" title="错词复习" :noKnowBtn="true" v-if="wrongWord.length!==0 && !isReciteComplete" :isFinish="isFinish"></answer>
+        <answer :word="wrongWord" title="错词复习"  :wordType="0"
+                :noKnowBtn="true" v-if="wrongWord.length!==0 && !isReciteComplete" :isFinish="isFinish"></answer>
         <div v-else-if="isReciteComplete ">
             <div :class="$style.review" v-show="wrongWord.length!==0">
                 <div>
