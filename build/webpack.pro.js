@@ -42,7 +42,7 @@ module.exports = merge(baseWebpackConfig, {
         }),
         new OfflinePlugin({
             ServiceWorker: {
-                output: utils.assetsPath('js/sw.js')
+                output: utils.assetsPath(`js/sw.${new Date().getTime()}.js`)
             }
         }),
         // extract css into its own file
