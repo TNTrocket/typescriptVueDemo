@@ -65,7 +65,7 @@
             this.isReciteComplete = cache.get("isReciteComplete") || false;
 //            let batchId = cache.get("batchId") || "";
             Indicator.open();
-            apiCall.post("/TKT/answerList", {
+            apiCall.post("/tkt/answerList", {
                 practicType: 0,
 //                batchId: batchId
             }).then((data) => {

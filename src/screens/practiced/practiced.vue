@@ -45,7 +45,10 @@
                 </div>
             </div>
         </div>
-        <div :class="$style.btn" @click="goResult">
+        <div :class="$style.btn" @click="modeAgain" v-if="unpracticedNumber === 0">
+            重练一次
+        </div>
+        <div :class="$style.btn" @click="goResult" v-else>
             {{btnTxt}}
         </div>
     </div>
@@ -54,7 +57,7 @@
 <script>
     import apiCall from 'util/xhr'
     import {cache} from 'util/global'
-    import {Indicator} from 'mint-ui';
+    import {Indicator,MessageBox} from 'mint-ui';
 
     export default {
         data() {
@@ -69,24 +72,7 @@
             }
         },
         created() {
-            Indicator.open();
-            let {type = "", module = ""} = this.$route.query;
-            apiCall.post("/TKT/moduleOrWrongWordOverview", {
-                type,
-                module
-            }).then((data) => {
-                this.practicedList= data.wordList.practiced || [];
-                this.unpracticedList =data.wordList.unpracticed;
-                this.practicedNumber = this.practicedList.length;
-                this.unpracticedNumber = this.unpracticedList.length;
-                if(this.practicedNumber ===0){
-                    this.btnTxt ="开始练习"
-                }else if(this.unpracticedNumber!==0&& this.practicedNumber!==0){
-                    this.btnTxt ="继续练习"
-                }
-                Indicator.close();
-            });
-            this.moduleName = module
+         this.init();
         },
         mounted() {
 //          this.$nextTick(()=>{
@@ -94,6 +80,26 @@
 //          })
         },
         methods: {
+            init(){
+                Indicator.open();
+                let {type = "", module = ""} = this.$route.query;
+                apiCall.post("/tkt/moduleOrWrongWordOverview", {
+                    type,
+                    module
+                }).then((data) => {
+                    this.practicedList= data.wordList.practiced || [];
+                    this.unpracticedList =data.wordList.unpracticed || [];
+                    this.practicedNumber = this.practicedList.length || 0;
+                    this.unpracticedNumber = this.unpracticedList.length || 0;
+                    if(this.practicedNumber ===0){
+                        this.btnTxt ="开始练习"
+                    }else if(this.unpracticedNumber!==0&& this.practicedNumber!==0){
+                        this.btnTxt ="继续练习"
+                    }
+                    Indicator.close();
+                });
+                this.moduleName = module
+            },
             onScroll:function (e,position) {
                 let offsetTop = document.querySelector(`.${this.$style.unPracticed}`).offsetTop
                 if (position.scrollTop >= offsetTop) {
@@ -103,12 +109,37 @@
                 }
 
             },
-            goResult:function () {
+            goResult () {
                 cache.remove("batchId");
                 cache.remove("iscomplete");
                 cache.remove("resultData");
                 cache.remove("wrongList");
                 this.$router.push({path:"practicedResult"});
+            },
+            modeAgain(){
+                let { module = ""} = this.$route.query;
+                apiCall.post("/tkt/replay",{
+                    module:module
+                }).then(() => {
+                    Indicator.close();
+                    MessageBox({
+                        message:"已练习将会清空，错词本会保留。确定要重头再来吗？",
+                        showConfirmButton: true,
+                        showCancelButton:true,
+                        title:"",
+                        cancelButtonText:"取消",
+                        confirmButtonText:"确定",
+                        closeOnClickModal:false
+                    }).then(action => {
+                        if(action === "cancel"){
+
+                        }else{
+                            this.init();
+                        }
+
+                    });
+
+                })
             }
         }
     }

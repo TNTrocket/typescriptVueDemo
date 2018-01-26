@@ -9,8 +9,8 @@ let proxy = require("http-proxy-middleware");
 let opn = require("opn");
 
 
-let app = express()
-
+let app = express();
+// app.use("/static",express.static(path.resolve(__dirname ,'../src/staticJs')));
 let proxyOptions = {
     // target: 'https://easy-mock.com/mock/5a5434d4aa6db1115269570c',
     target: 'http://192.168.1.2:10081',

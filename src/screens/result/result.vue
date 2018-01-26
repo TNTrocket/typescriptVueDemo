@@ -118,7 +118,7 @@
 
             } else {
 
-                apiCall.post("/TKT/answerList", {
+                apiCall.post("/tkt/answerList", {
                     practicType: this.practicType,
                     batchId: batchId
                 }).then((data) => {

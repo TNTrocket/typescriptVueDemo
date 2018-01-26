@@ -102,7 +102,7 @@
 
             } else if (this.isNew === "N") {
                 Indicator.open();
-                apiCall.post("/TKT/TKTOverview").then((data) => {
+                apiCall.post("/tkt/TKTOverview").then((data) => {
                     this.practicedNo = data.practicedNo;
                     this.totalNo = data.totalNo;
                     this.practiced = data.practiced;
@@ -143,7 +143,7 @@
             },
             again() {
                 Indicator.open();
-                apiCall.post("/TKT/replay").then(() => {
+                apiCall.post("/tkt/replay").then(() => {
                     Indicator.close();
                     MessageBox({
                         message:"已练习将会清空，错词本会保留。确定要重头再来吗？",
@@ -151,7 +151,7 @@
                         showCancelButton:true,
                         title:"",
                         cancelButtonText:"取消",
-                        confirmButtonText:"确认",
+                        confirmButtonText:"确定",
                         closeOnClickModal:false
                     }).then(action => {
                         if(action === "cancel"){

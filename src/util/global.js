@@ -139,3 +139,39 @@ function cookie() {
         remove: remove
     }
 }
+
+export function encrypt(value) {
+    if (!value) {
+        return '';
+    }
+    let key = CryptoJS.enc.Utf8.parse("sunlandsmall2017");
+    let iv = CryptoJS.enc.Utf8.parse('2017sunlandsmall');
+    let srcs = CryptoJS.enc.Utf8.parse(JSON.stringify(value));
+    let encrypted = CryptoJS.AES.encrypt(srcs, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
+
+    return encrypted.toString();
+}
+
+export function decrypt(value) {
+    if (!value) {
+        return '';
+    }
+    let key = CryptoJS.enc.Utf8.parse("sunlandsmall2017");
+    let iv = CryptoJS.enc.Utf8.parse('2017sunlandsmall');
+    let decryptedStr
+    //let srcs = CryptoJS.enc.Base64.parse(value);
+    let result ='';
+    try {
+        let decrypt = CryptoJS.AES.decrypt(value, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
+        decryptedStr = CryptoJS.enc.Utf8.stringify(decrypt);
+    } catch (e) {
+        console.log(e)
+        return ''
+    }
+
+    if (decryptedStr){
+        result = JSON.parse(decryptedStr);
+    }
+
+    return result;
+}

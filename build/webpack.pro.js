@@ -1,15 +1,16 @@
 'use strict'
-let path = require('path')
-let styleLoaderConf = require('./styleLoaderConf')
-let webpack = require('webpack')
-let baseWebpackConfig = require('./webpack.config')
-let HtmlWebpackPlugin = require('html-webpack-plugin')
+let path = require('path');
+let styleLoaderConf = require('./styleLoaderConf');
+let webpack = require('webpack');
+let baseWebpackConfig = require('./webpack.config');
+let HtmlWebpackPlugin = require('html-webpack-plugin');
 let merge = require("webpack-merge");
-let ExtractTextPlugin = require('extract-text-webpack-plugin')
-let OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
-let OfflinePlugin = require('offline-plugin')
-let config = require("./config")
-let utils = require("./utils")
+let ExtractTextPlugin = require('extract-text-webpack-plugin');
+let OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
+let OfflinePlugin = require('offline-plugin');
+let config = require("./config");
+let utils = require("./utils");
+let CopyWebpackPlugin = require("copy-webpack-plugin");
 
 
 module.exports = merge(baseWebpackConfig, {
@@ -99,8 +100,8 @@ module.exports = merge(baseWebpackConfig, {
         // copy custom static assets
         // new CopyWebpackPlugin([
         //     {
-        //         from: path.resolve(__dirname, '../static'),
-        //         to: config.build.assetsSubDirectory,
+        //         from: path.resolve(__dirname, '../src/staticJs'),
+        //         to: utils.assetsPath('js/staticJs/'),
         //         ignore: ['.*']
         //     }
         // ])

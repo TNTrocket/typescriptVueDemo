@@ -44,7 +44,7 @@
         created() {
             Indicator.open();
             let {type = "", module = ""} = this.$route.query;
-            apiCall.post("/TKT/moduleOrWrongWordOverview", {
+            apiCall.post("/tkt/moduleOrWrongWordOverview", {
                 type,
                 module:module
             }).then((data) => {

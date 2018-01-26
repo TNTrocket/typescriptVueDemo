@@ -155,7 +155,7 @@
                         this.wrongWordsList.push(this.currentList)
                     }
                     Indicator.open();
-                    apiCall.post("/TKT/feedbackList", {
+                    apiCall.post("/tkt/feedbackList", {
                         feedbackList: [{
                             isCurrent: tempObj.isCurrent ? 1 : 0,
                             questionId: this.questionId,
@@ -218,7 +218,7 @@
                     }else{
 
                         Indicator.open();
-                        apiCall.post("/TKT/deleteWrongWordList", {
+                        apiCall.post("/tkt/deleteWrongWordList", {
                             feedbackList: [{
                                 batchId: cache.get("batchId"),
                                 wordId: this.currectOptionId,

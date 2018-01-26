@@ -27,7 +27,7 @@
                     </div>
                 </div>
             </div>
-            <div :class="$style.delete" v-show="rightNumber">
+            <div :class="$style.delete" v-show="rightNumber && isNeedDelete">
                 <span @click="deleteWrongWordList">删除本次答对的单词</span>
                 <span :class="$style.deleteArrow"></span>
             </div>
@@ -93,7 +93,8 @@
                 practicedNo: 0,
                 wrongWordNo: 0,
                 originAnswerNumber: 0,
-                deleteWordList: []
+                deleteWordList: [],
+                isNeedDelete:false
             }
         },
         created() {
@@ -107,7 +108,7 @@
             if (this.iscomplete) {
                 this.isFinish();
             } else {
-                apiCall.post("/TKT/answerList", {
+                apiCall.post("/tkt/answerList", {
                     practicType: practicType,
                     batchId: batchId,
                     module: module
@@ -150,7 +151,7 @@
                 let batchId = cache.get("batchId") || "";
                 let {practicType = "", module = ""} = this.$route.query;
                 Indicator.open();
-                apiCall.post("/TKT/answerList", {
+                apiCall.post("/tkt/answerList", {
                     practicType: practicType,
                     batchId: batchId,
                     module: module
@@ -181,6 +182,9 @@
                             });
                             this.deleteWordList = deleteList;
                             this.rightNumber = rightNumber;
+                            if(this.rightNumber>0){
+                                this.isNeedDelete = true;
+                            }
                             this.wrongNumber = wrongNumber;
                             this.answerNumber = item.answers.length;
                             this.wrongWordsList = tempArray;
@@ -196,7 +200,7 @@
             },
             deleteWrongWordList() {
                 MessageBox({
-                    message: `确定要从错词本删除这${this.deleteWordList.length}个单词吗？`,
+                    message: `确定要从错词本删除这${this.deleteWordList.length || 0}个单词吗？`,
                     showConfirmButton: true,
                     showCancelButton: true,
                     title: "",
@@ -208,11 +212,11 @@
 
                     } else {
                         Indicator.open();
-                        apiCall.post("/TKT/deleteWrongWordList", {
+                        apiCall.post("/tkt/deleteWrongWordList", {
                             batchId: cache.get("batchId") || "",
                             feedbackList: this.deleteWordList
                         }).then(() => {
-                            
+                            this.isNeedDelete =false;
                             Indicator.close();
                         })
 

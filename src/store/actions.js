@@ -4,7 +4,7 @@ import * as types from './mutation-types'
 
 
 export const login = ({ commit }, payload) => {
-  return  apiCall.post("/user/login",{...payload}).then((data) => {
+  return  apiCall.post("/tkt/login",{...payload}).then((data) => {
     commit(types.LOGIN, {
         ...data
     })
