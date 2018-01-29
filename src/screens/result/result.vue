@@ -119,7 +119,7 @@
             } else {
 
                 apiCall.post("/tkt/answerList", {
-                    practicType: this.practicType,
+                    praticType: this.practicType,
                     batchId: batchId
                 }).then((data) => {
                     cache.set("batchId", data.batchId);

@@ -47,14 +47,14 @@
                 <div><span :class="$style.prevArrow"></span>上一个</div>
             </div>
             <div :class="$style.btn" @click="unKnow"
-                 v-if="!noKnowBtn && !isNeedDelete && respondenceList[currentAnswer].isCurrent !==false">
+                 v-if="!noKnowBtn && !isPropsNeedDelete && respondenceList[currentAnswer].isCurrent !==false">
                 不认识
             </div>
             <div :class="$style.btn"
-                 v-else-if="!noKnowBtn && !isNeedDelete && !respondenceList[currentAnswer].isCurrent">
+                 v-else-if="!noKnowBtn && !isPropsNeedDelete && !respondenceList[currentAnswer].isCurrent">
                 已加入错词本
             </div>
-            <div :class="$style.btn" @click="deleteWrong" v-else-if="isNeedDelete">
+            <div :class="$style.btn" @click="deleteWrong" v-else-if="isPropsNeedDelete">
                 删除
             </div>
             <div v-else-if="currentAnswer>0" :class="$style.broder"></div>
@@ -89,7 +89,7 @@
                 type: Boolean,
                 default: false
             },
-            isNeedDelete: {
+            isPropsNeedDelete: {
                 type: Boolean,
                 default: false
             },
@@ -156,12 +156,18 @@
                     }
                     Indicator.open();
                     apiCall.post("/tkt/feedbackList", {
-                        feedbackList: [{
+                        batchId: cache.get("batchId"),
+                        feedbackList: JSON.stringify(
+                            {
+                            feedbackList:[{
                             isCurrent: tempObj.isCurrent ? 1 : 0,
                             questionId: this.questionId,
                             finalChoice: data.option,
-                            type: this.wordType
-                        }]
+                            type: this.wordType,
+                            currectOptionId: this.currectOptionId
+                             }]
+                            }
+                        )
                     }).then(() => {
                         Indicator.close();
                         this.$set(this.respondenceList, this.currentAnswer, tempObj)
@@ -219,11 +225,15 @@
 
                         Indicator.open();
                         apiCall.post("/tkt/deleteWrongWordList", {
-                            feedbackList: [{
-                                batchId: cache.get("batchId"),
-                                wordId: this.currectOptionId,
-                                delete: 1
-                            }]
+                            batchId: cache.get("batchId"),
+                            feedbackList: JSON.stringify(
+                                {
+                                feedbackList: [{
+                                    wordId: this.currectOptionId,
+                                    delete: 1
+                                }]
+                            }
+                            )
                         }).then(() => {
                             Indicator.close();
 

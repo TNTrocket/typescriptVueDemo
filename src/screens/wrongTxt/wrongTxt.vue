@@ -1,13 +1,14 @@
 <template>
     <div :class="$style.wrapper" v-scroll="onScroll">
        <div :class="$style.wrongWordList" v-for="res in wrongWordList">
-           <div :class="{
+           <div :class="res.module">
+               <div :class="{
            [$style.header]:true,
-           [res.module]:true,
+//           [res.module]:true,
            [$style.whiteBg]: res.module === moduleName
-            }
-            ">
-               {{res.module}}&nbsp;错词&nbsp;({{res.wrongWords.length}}个)
+            }" v-if="res.wrongWords.length!==0">
+                   {{res.module}}&nbsp;错词&nbsp;({{res.wrongWords.length}}个)
+               </div>
            </div>
            <div :class="$style.wordsBox" v-for="item in res.wrongWords">
                <div :class="$style.word">
@@ -38,7 +39,8 @@
         data() {
             return {
                 wrongWordList:[],
-                moduleName:"module1",
+                moduleName:"",
+                originModuleName:""
             }
         },
         created() {
@@ -49,6 +51,13 @@
                 module:module
             }).then((data) => {
                 this.wrongWordList = data.wrongWordList;
+                for( let item of this.wrongWordList){
+                    if(item.wrongWords.length >0){
+                        this.moduleName = item.module;
+                        this.originModuleName = item.module;
+                        break;
+                    }
+                }
                 Indicator.close();
             });
         },
@@ -59,16 +68,31 @@
         },
         methods: {
             onScroll:function (e,position) {
-                let module2Top = document.querySelector(".module2").offsetTop;
-                let module3Top = document.querySelector(".module3").offsetTop;
-                if (position.scrollTop >= module2Top) {
-                   this.moduleName ="module2"
-                }else if (position.scrollTop >= module3Top) {
-                    this.moduleName ="module3"
-                }else{
-                    this.moduleName ="module1"
-                }
+                let module1Top, module2Top, module3Top;
 
+                let module = this.originModuleName.match(/\d+/g)[0];
+                let originTop = document.querySelector(`.${this.originModuleName}`).offsetTop;
+                if(module == 3){
+                    this.moduleName = this.originModuleName;
+                }else if(module == 2){
+                    module3Top = document.querySelector(".module3").offsetTop;
+                    if (position.scrollTop >= module3Top) {
+                        this.moduleName="module3"
+                    }else{
+                        this.moduleName = this.originModuleName;
+                    }
+                }else if(module == 1){
+                    module2Top = document.querySelector(".module2").offsetTop;
+                    module3Top = document.querySelector(".module3").offsetTop;
+                    if (position.scrollTop >= module2Top) {
+                        this.moduleName="module2"
+                    }else if(position.scrollTop >= module3Top){
+                        this.moduleName="module3"
+                    }
+                    else{
+                        this.moduleName = this.originModuleName;
+                    }
+                }
             },
             goResult:function () {
                 cache.remove("batchId");
@@ -77,7 +101,7 @@
                 cache.remove("wrongList");
                 let {type = "", module = ""} = this.$route.query;
                 this.$router.push({path:"wrongResult",query:{
-                    practicType: type==2 ?3 :2,
+                    praticType: type==2 ?2 :3,
                     module:module
                 }});
             }

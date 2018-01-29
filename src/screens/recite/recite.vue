@@ -2,7 +2,7 @@
     <div :class="$style.Rwapper">
         <answer :word="wrongWord" title="错词复习"  :wordType="0"
                 :noKnowBtn="true" v-if="wrongWord.length!==0 && !isReciteComplete" :isFinish="isFinish"></answer>
-        <div v-else-if="isReciteComplete ">
+        <div v-else-if="isReciteComplete || newWord.length > 0">
             <div :class="$style.review" v-show="wrongWord.length!==0">
                 <div>
                     <p>复习完成！</p>
@@ -29,7 +29,7 @@
                         </div>
                     </div>
                     <div :class="$style.tips">
-                       <div>{{item.POS}}&nbsp;{{item.meaning}}</div>
+                       <div>{{item.pos}}&nbsp;{{item.meaning}}</div>
                     </div>
                 </div>
             </div>
@@ -66,7 +66,7 @@
 //            let batchId = cache.get("batchId") || "";
             Indicator.open();
             apiCall.post("/tkt/answerList", {
-                practicType: 0,
+                praticType: 0,
 //                batchId: batchId
             }).then((data) => {
                 Indicator.close();

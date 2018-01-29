@@ -7,6 +7,7 @@ import "./validators"
 import store from "./store/index"
 import vuescroll from 'vue-scroll'
 import Vue2Touch from 'vue2-touch'
+import "babel-polyfill"
 
 Vue.use(Vue2Touch);
 Vue.use(vuescroll);

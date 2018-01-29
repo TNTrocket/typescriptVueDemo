@@ -1,6 +1,6 @@
 import Mock from 'mockjs'
 
-Mock.mock(/ntce-c\/user\/login/, 'post', function (options) {
+Mock.mock(/ntce-c\/tkt\/login/, 'post', function (options) {
     return Mock.mock({
             "code": 10000,
             "msg": "ok",
@@ -16,7 +16,7 @@ Mock.mock(/ntce-c\/user\/login/, 'post', function (options) {
 });
 
 
-Mock.mock(/ntce-c\/TKT\/answerList/, 'post', function (options) {
+Mock.mock(/ntce-c\/tkt\/answerList/, 'post', function (options) {
     return Mock.mock({
             "code": 10000,
             "msg": "ok",

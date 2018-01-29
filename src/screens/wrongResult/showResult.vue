@@ -2,7 +2,7 @@
     <div :class="$style.resultWrapper">
         <answer :word="this.newWord" v-if="this.newWord.length!==0 && !iscomplete"
                 :title="resultTitle" :isFinish="isFinish" :noKnowBtn="noKnowBtn"
-                :isNeedDelete="isNeedDelete" :wordType="0"
+                :isPropsNeedDelete="isPropsNeedDelete" :wordType="0"
         ></answer>
         <div v-else-if="iscomplete">
             <div :class="$style.resultBox">
@@ -74,7 +74,7 @@
                 type: Boolean,
                 default: false
             },
-            isNeedDelete: {
+            isPropsNeedDelete: {
                 type: Boolean,
                 default: false
             },
@@ -103,19 +103,18 @@
             this.practicedNo = cache.get("practicedNo") || 0;
             this.wrongWordNo = cache.get("wrongWordNo") || 0;
             this.iscomplete = cache.get("iscomplete") || "";
-            let {practicType = "", module = ""} = this.$route.query;
-
+            let {praticType = "", module = ""} = this.$route.query;
             if (this.iscomplete) {
                 this.isFinish();
             } else {
                 apiCall.post("/tkt/answerList", {
-                    practicType: practicType,
+                    praticType: praticType,
                     batchId: batchId,
                     module: module
                 }).then((data) => {
                     cache.set("batchId", data.batchId);
                     for (let item of data.answerlist) {
-                        if (item.type == 0) {
+                        if (item.type == 1) {
                             let temp = {};
                             item.answers.forEach((res, index) => {
                                 if (temp[res.module]) {
@@ -139,6 +138,12 @@
 
         },
         mounted() {
+         console.log(this.newWord)
+        },
+        beforeUpdate(){
+
+        },
+        updated(){
 
         },
         methods: {
@@ -149,16 +154,16 @@
                 }
                 this.iscomplete = iscomplete;
                 let batchId = cache.get("batchId") || "";
-                let {practicType = "", module = ""} = this.$route.query;
+                let {praticType = "", module = ""} = this.$route.query;
                 Indicator.open();
                 apiCall.post("/tkt/answerList", {
-                    practicType: practicType,
+                    praticType: praticType,
                     batchId: batchId,
                     module: module
                 }).then((data) => {
                     Indicator.close();
                     for (let item of data.answerlist) {
-                        if (item.type == 0) {
+                        if (item.type == 1) {
                             let tempArray = [];
                             let rightNumber = 0;
                             let wrongNumber = 0;

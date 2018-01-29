@@ -1,6 +1,6 @@
 import Mock from 'mockjs'
 
-Mock.mock(/ntce-c\/TKT\/feedbackList/, 'post', function (options) {
+Mock.mock(/ntce-c\/tkt\/feedbackList/, 'post', function (options) {
     return Mock.mock({
             "code": 10000,
             "msg": "ok",
@@ -17,7 +17,7 @@ Mock.mock(/ntce-c\/TKT\/feedbackList/, 'post', function (options) {
 
 
 
-Mock.mock(/ntce-c\/TKT\/TKTOverview/, 'post', function (options) {
+Mock.mock(/ntce-c\/tkt\/TKTOverview/, 'post', function (options) {
     return Mock.mock({
             "code": 10000,
             "msg": "ok",
@@ -39,7 +39,7 @@ Mock.mock(/ntce-c\/TKT\/TKTOverview/, 'post', function (options) {
 });
 
 
-Mock.mock(/ntce-c\/TKT\/moduleOrWrongWordOverview/, 'post', function (options) {
+Mock.mock(/ntce-c\/tkt\/moduleOrWrongWordOverview/, 'post', function (options) {
     return Mock.mock({
             "code": 10000,
             "msg": "ok",
@@ -66,7 +66,7 @@ Mock.mock(/ntce-c\/TKT\/moduleOrWrongWordOverview/, 'post', function (options) {
                             {'word':'a','phonogram':'英[xxxx] 美[xxxx]','partOfSpeech':'adj.','meaning':'xxxx'}
                         ]
                     },{'module':'module2',
-                        wrongWords:[
+                        "wrongWords|10":[
                             {'word':'a','phonogram':'英[xxxx] 美[xxxx]','partOfSpeech':'adj.','meaning':'xxxx'},
                             {'word':'a','phonogram':'英[xxxx] 美[xxxx]','partOfSpeech':'adj.','meaning':'xxxx'},
                             {'word':'a','phonogram':'英[xxxx] 美[xxxx]','partOfSpeech':'adj.','meaning':'xxxx'}
@@ -79,7 +79,7 @@ Mock.mock(/ntce-c\/TKT\/moduleOrWrongWordOverview/, 'post', function (options) {
 });
 
 
-Mock.mock(/ntce-c\/TKT\/deleteWrongWordList/, 'post', function (options) {
+Mock.mock(/ntce-c\/tkt\/deleteWrongWordList/, 'post', function (options) {
     return Mock.mock({
             "code": 10000,
             "msg": "ok",
@@ -94,7 +94,7 @@ Mock.mock(/ntce-c\/TKT\/deleteWrongWordList/, 'post', function (options) {
     )
 });
 
-Mock.mock(/ntce-c\/TKT\/replay/, 'post', function (options) {
+Mock.mock(/ntce-c\/tkt\/replay/, 'post', function (options) {
     return Mock.mock({
             "code": 10000,
             "msg": "ok",

@@ -5,8 +5,7 @@
            [$style.header]:true,
            [$style.whiteBg]:!barFixed,
            [$style.fixed]:!barFixed
-            }
-            ">
+            }" v-if="practicedList.length!==0">
                 {{moduleName}}&nbsp;已练习&nbsp;({{practicedNumber}}/{{practicedNumber+ unpracticedNumber}})
             </div>
             <div :class="$style.wordsBox" v-for="item in practicedList">
@@ -28,7 +27,7 @@
             [$style.header]:true,
            [$style.whiteBg]:barFixed,
            [$style.fixed]:barFixed
-            }">
+            }" v-if="unpracticedList.length!==0">
                 {{moduleName}}&nbsp;未练习&nbsp;({{unpracticedNumber}}/{{practicedNumber+ unpracticedNumber}})
             </div>
             <div :class="$style.wordsBox" v-for="item in unpracticedList">

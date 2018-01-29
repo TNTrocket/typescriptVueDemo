@@ -1,5 +1,5 @@
 <template>
-    <result  resultTitle="错题复习" :isNeedDelete="isNeedDelete"
+    <result  resultTitle="错题复习" :isPropsNeedDelete="isNeedDelete"
             resultMode="wrongTxt"
     ></result>
 </template>

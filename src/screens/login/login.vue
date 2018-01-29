@@ -30,6 +30,7 @@
     import apiCall from 'util/xhr'
     import {mapState, mapActions, mapMutations, mapGetters} from 'vuex'
     import {Indicator, MessageBox} from 'mint-ui';
+    import {cache} from 'util/global';
 
 
     export default {
@@ -39,7 +40,7 @@
 //            }
 //        },
         created() {
-
+            cache.remove("token");
         },
         mounted() {
 

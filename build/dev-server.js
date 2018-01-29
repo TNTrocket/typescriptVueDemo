@@ -13,7 +13,7 @@ let app = express();
 // app.use("/static",express.static(path.resolve(__dirname ,'../src/staticJs')));
 let proxyOptions = {
     // target: 'https://easy-mock.com/mock/5a5434d4aa6db1115269570c',
-    target: 'http://192.168.1.2:10081',
+    target: 'http://10.251.221.235:10081',
     changeOrigin: true,               // needed for virtual hosted sites
     ws: false,                         // proxy websockets
     pathRewrite: {

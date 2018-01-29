@@ -26,7 +26,7 @@
                         </ul>
                     </div>
                 </div>
-                <div :class="$style.wrongWord">
+                <div :class="$style.wrongWord" v-if="wrongWordNo > 0">
                     <div :class="$style.title">
                         <span :class="$style.icon"></span>
                         <span :class="$style.txt">错词本</span>
@@ -38,7 +38,7 @@
                     </div>
                     <div :class="$style.moduleList">
                         <ul>
-                            <li v-for="(val,key) in practiced" @click="gowrongTxt(2,key)">
+                            <li v-for="(val,key) in wrongWordModules" @click="gowrongTxt(2,key)">
                                 <div :class="$style.module">
                                     M
                                 </div>
@@ -102,17 +102,19 @@
 
             } else if (this.isNew === "N") {
                 Indicator.open();
-                apiCall.post("/tkt/TKTOverview").then((data) => {
+                apiCall.post("/tkt/getTKTOverview").then((data) => {
                     this.practicedNo = data.practicedNo;
                     this.totalNo = data.totalNo;
                     this.practiced = data.practiced;
                     this.wrongWordModules = data.wrongWordModules;
                     this.wrongWordNo = data.wrongWordNo;
-                    this.isDone = this.practicedNo === this.totalNo;
+                    this.isDone = this.practicedNo === this.totalNo & this.totalNo != 0;
                     cache.set("totalNo", this.totalNo);
                     cache.set("practicedNo", this.practicedNo);
                     cache.set("wrongWordNo", this.wrongWordNo);
                     Indicator.close();
+                },()=>{
+
                 })
             }
         },
@@ -126,18 +128,25 @@
                 this.$router.push({path: "recite"})
             },
             goPracticed(module) {
+                let moduleId = module.match(/\d+/g);
+                console.log(moduleId);
                 this.$router.push({
                     path: "practiced", query: {
                         type: 0,
-                        module: module
+                        module: moduleId[0]
                     }
                 })
             },
             gowrongTxt(type, module) {
+                let moduleId =[];
+                if(module) {
+                     moduleId = module.match(/\d+/g);
+                }
+                console.log(moduleId);
                 this.$router.push({
                     path: "wrongTxt", query: {
                         type,
-                        module: module
+                        module: moduleId[0] ? moduleId[0] : ""
                     }
                 })
             },

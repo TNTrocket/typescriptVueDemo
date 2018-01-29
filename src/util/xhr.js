@@ -1,7 +1,9 @@
 import axios from 'axios';
-import {cache} from 'util/global'
-import store from '../store/'
-import {MessageBox} from 'mint-ui';
+import {cache} from 'util/global';
+import store from '../store/';
+import {MessageBox, Indicator} from 'mint-ui';
+import qs from 'qs';
+import router from '../router'
 
 axios.defaults.baseURL = '/ntce-c';
 axios.defaults.headers.common['Cache-Control'] = 'no-cache';
@@ -13,15 +15,35 @@ axios.interceptors.response.use(function ({data, config, status}) {
         if (data.code === 10000) {
             return Promise.resolve(data.data);
         }else if(data.code === 10101){
-            return Promise.reject(data.msg);
-        }else if(data.code === 99999){
             MessageBox({
-                message:"服务异常，请稍后再试",
-                showConfirmButton: true,
+                message:"登录异常",
+                showConfirmButton: false,
                 title:"",
-                confirmButtonText:"确认",
+                // confirmButtonText:"确认",
                 closeOnClickModal:false
             });
+            setTimeout(()=>{
+                Indicator.close();
+                MessageBox.close();
+                router.push({path:'/login'});
+            },2000);
+            return Promise.reject(data);
+        }else if(data.code === 10109){
+
+            return Promise.reject(data.msg);
+        }
+        else if(data.code === 99999){
+            // MessageBox({
+            //     message:"服务异常，请稍后再试",
+            //     showConfirmButton: false,
+            //     title:"",
+            //     // confirmButtonText:"确认",
+            //     closeOnClickModal:false
+            // });
+            // setTimeout(()=>{
+            //     Indicator.close();
+            //     MessageBox.close();
+            // },2000);
             return Promise.reject(data);
         }
         else {
@@ -65,10 +87,9 @@ export default {
         return axios({
             method: 'post',
             url: url,
-            data: data,
+            data: qs.stringify(data),
             ignoreErrorModal: config.ignoreErrorModal || false,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest',
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'token': userToken
             }

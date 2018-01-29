@@ -40,11 +40,13 @@ module.exports = merge(baseWebpackConfig, {
             },
             sourceMap: true
         }),
-        new OfflinePlugin({
-            ServiceWorker: {
-                output: utils.assetsPath(`js/sw.${new Date().getTime()}.js`)
-            }
-        }),
+        // new OfflinePlugin({
+        //     ServiceWorker: false,
+        //     responseStrategy:"network-first"
+            // AppCache: {
+            //     directory:"appcache/manifest123.appcache"
+            // }
+        // }),
         // extract css into its own file
         new ExtractTextPlugin({
             filename: utils.assetsPath('/css/[name].[contenthash:7].css'),
