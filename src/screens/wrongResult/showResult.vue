@@ -204,7 +204,7 @@
                 this.$router.push({path: "index"})
             },
             deleteWrongWordList() {
-                console.log(this.deleteWordList);
+
                 MessageBox({
                     message: `确定要从错词本删除这${this.deleteWordList.length || 0}个单词吗？`,
                     showConfirmButton: true,

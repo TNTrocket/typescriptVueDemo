@@ -14,7 +14,6 @@ axios.interceptors.response.use(function ({data, config, status}) {
     if (status === 200) {
         if (data.code === 10000) {
             let resultData = JSON.parse(data.data);
-            console.log(resultData)
             return Promise.resolve(resultData);
         }else if(data.code === 10101){
             MessageBox({
