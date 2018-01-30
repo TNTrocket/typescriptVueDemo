@@ -17,7 +17,7 @@ Mock.mock(/ntce-c\/tkt\/feedbackList/, 'post', function (options) {
 
 
 
-Mock.mock(/ntce-c\/tkt\/TKTOverview/, 'post', function (options) {
+Mock.mock(/ntce-c\/tkt\/getTKTOverview/, 'post', function (options) {
     return Mock.mock({
             "code": 10000,
             "msg": "ok",
@@ -66,6 +66,12 @@ Mock.mock(/ntce-c\/tkt\/moduleOrWrongWordOverview/, 'post', function (options) {
                             {'word':'a','phonogram':'英[xxxx] 美[xxxx]','partOfSpeech':'adj.','meaning':'xxxx'}
                         ]
                     },{'module':'module2',
+                        "wrongWords|10":[
+                            {'word':'a','phonogram':'英[xxxx] 美[xxxx]','partOfSpeech':'adj.','meaning':'xxxx'},
+                            {'word':'a','phonogram':'英[xxxx] 美[xxxx]','partOfSpeech':'adj.','meaning':'xxxx'},
+                            {'word':'a','phonogram':'英[xxxx] 美[xxxx]','partOfSpeech':'adj.','meaning':'xxxx'}
+                        ]
+                    },{'module':'module3',
                         "wrongWords|10":[
                             {'word':'a','phonogram':'英[xxxx] 美[xxxx]','partOfSpeech':'adj.','meaning':'xxxx'},
                             {'word':'a','phonogram':'英[xxxx] 美[xxxx]','partOfSpeech':'adj.','meaning':'xxxx'},

@@ -175,3 +175,11 @@ export function decrypt(value) {
 
     return result;
 }
+
+export function isEmptyObject(e) {
+    let t;
+    for (t in e){
+        return false;
+    }
+    return true
+}

@@ -38,7 +38,9 @@
                     </div>
                     <div :class="$style.moduleList">
                         <ul>
-                            <li v-for="(val,key) in wrongWordModules" @click="gowrongTxt(2,key)">
+                            <li v-for="(val,key) in wrongWordModules"
+                                v-if="val!=0"
+                                @click="gowrongTxt(2,key)">
                                 <div :class="$style.module">
                                     M
                                 </div>
@@ -129,7 +131,6 @@
             },
             goPracticed(module) {
                 let moduleId = module.match(/\d+/g);
-                console.log(moduleId);
                 this.$router.push({
                     path: "practiced", query: {
                         type: 0,
@@ -142,7 +143,6 @@
                 if(module) {
                      moduleId = module.match(/\d+/g);
                 }
-                console.log(moduleId);
                 this.$router.push({
                     path: "wrongTxt", query: {
                         type,

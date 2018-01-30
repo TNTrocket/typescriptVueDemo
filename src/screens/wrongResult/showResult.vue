@@ -138,7 +138,7 @@
 
         },
         mounted() {
-         console.log(this.newWord)
+
         },
         beforeUpdate(){
 
@@ -171,8 +171,8 @@
                             let deleteObj = {};
                             item.answers.forEach((res, index) => {
                                 if (res.currectOption === res.finalOption) {
-                                    rightNumber++
-                                    deleteObj.wordId = item.questionId;
+                                    rightNumber++;
+                                    deleteObj.wordId = res.questionId;
                                     deleteObj.delete = "1";
                                 } else if (res.finalOption) {
                                     wrongNumber++;
@@ -183,8 +183,8 @@
                                     }
                                     tempArray.push(res);
                                 }
-                                deleteList.push(deleteObj);
                             });
+                            deleteList.push(deleteObj);
                             this.deleteWordList = deleteList;
                             this.rightNumber = rightNumber;
                             if(this.rightNumber>0){
@@ -204,6 +204,7 @@
                 this.$router.push({path: "index"})
             },
             deleteWrongWordList() {
+                console.log(this.deleteWordList);
                 MessageBox({
                     message: `确定要从错词本删除这${this.deleteWordList.length || 0}个单词吗？`,
                     showConfirmButton: true,
@@ -219,7 +220,11 @@
                         Indicator.open();
                         apiCall.post("/tkt/deleteWrongWordList", {
                             batchId: cache.get("batchId") || "",
-                            feedbackList: this.deleteWordList
+                            feedbackList: JSON.stringify(
+                                {
+                                    feedbackList: this.deleteWordList
+                                }
+                            )
                         }).then(() => {
                             this.isNeedDelete =false;
                             Indicator.close();

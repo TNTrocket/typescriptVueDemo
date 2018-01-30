@@ -4,7 +4,6 @@
            <div :class="res.module">
                <div :class="{
            [$style.header]:true,
-//           [res.module]:true,
            [$style.whiteBg]: res.module === moduleName
             }" v-if="res.wrongWords.length!==0">
                    {{res.module}}&nbsp;错词&nbsp;({{res.wrongWords.length}}个)
@@ -69,29 +68,59 @@
         methods: {
             onScroll:function (e,position) {
                 let module1Top, module2Top, module3Top;
+                let module1,module2,module3;
+                module1 = document.querySelector(".module1");
+                module2 = document.querySelector(".module2");
+                module3 = document.querySelector(".module3");
 
                 let module = this.originModuleName.match(/\d+/g)[0];
                 let originTop = document.querySelector(`.${this.originModuleName}`).offsetTop;
                 if(module == 3){
                     this.moduleName = this.originModuleName;
                 }else if(module == 2){
-                    module3Top = document.querySelector(".module3").offsetTop;
-                    if (position.scrollTop >= module3Top) {
-                        this.moduleName="module3"
+
+                    if(module3){
+                        module3Top = module3.offsetTop;
+                        if (position.scrollTop >= module3Top) {
+                            this.moduleName="module3"
+                        }else{
+                            this.moduleName = this.originModuleName;
+                        }
                     }else{
                         this.moduleName = this.originModuleName;
                     }
+
+
                 }else if(module == 1){
-                    module2Top = document.querySelector(".module2").offsetTop;
-                    module3Top = document.querySelector(".module3").offsetTop;
-                    if (position.scrollTop >= module2Top) {
-                        this.moduleName="module2"
-                    }else if(position.scrollTop >= module3Top){
-                        this.moduleName="module3"
+
+                    if(module2 && module3){
+                        module2Top = module2.offsetTop;
+                        module3Top = module3.offsetTop;
+                        if (position.scrollTop >= module2Top && position.scrollTop< module3Top) {
+                            this.moduleName="module2"
+                        }else if(position.scrollTop >= module3Top){
+                            this.moduleName="module3"
+                        }
+                        else{
+                            this.moduleName = this.originModuleName;
+                        }
+                    }else if(module2){
+                        module2Top = module2.offsetTop;
+                        if (position.scrollTop >= module2Top) {
+                            this.moduleName="module2"
+                        }else{
+                            this.moduleName = this.originModuleName;
+                        }
+                    }else if(module3){
+                        module3Top = module3.offsetTop;
+                        if(position.scrollTop >= module3Top){
+                            this.moduleName="module3"
+                        }
+                        else{
+                            this.moduleName = this.originModuleName;
+                        }
                     }
-                    else{
-                        this.moduleName = this.originModuleName;
-                    }
+
                 }
             },
             goResult:function () {

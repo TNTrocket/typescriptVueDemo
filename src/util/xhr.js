@@ -13,7 +13,9 @@ axios.interceptors.response.use(function ({data, config, status}) {
     // Do something with response data
     if (status === 200) {
         if (data.code === 10000) {
-            return Promise.resolve(data.data);
+            let resultData = JSON.parse(data.data);
+            console.log(resultData)
+            return Promise.resolve(resultData);
         }else if(data.code === 10101){
             MessageBox({
                 message:"登录异常",
@@ -43,6 +45,7 @@ axios.interceptors.response.use(function ({data, config, status}) {
             // setTimeout(()=>{
             //     Indicator.close();
             //     MessageBox.close();
+            //     router.push({path:'/login'});
             // },2000);
             return Promise.reject(data);
         }

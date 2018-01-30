@@ -76,7 +76,7 @@
                         let temp ={};
                         item.answers.forEach((res,index)=>{
                             if(temp[res.module]){
-                                temp[res.module]+=temp[res.module]
+                                temp[res.module]++;
                             }else{
                                 temp[res.module]=1;
                             }

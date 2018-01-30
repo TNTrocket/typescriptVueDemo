@@ -6,7 +6,7 @@
            [$style.whiteBg]:!barFixed,
            [$style.fixed]:!barFixed
             }" v-if="practicedList.length!==0">
-                {{moduleName}}&nbsp;已练习&nbsp;({{practicedNumber}}/{{practicedNumber+ unpracticedNumber}})
+                Module{{moduleName}}&nbsp;已练习&nbsp;({{practicedNumber}}/{{practicedNumber + unpracticedNumber}})
             </div>
             <div :class="$style.wordsBox" v-for="item in practicedList">
                 <div :class="$style.word">
@@ -28,7 +28,7 @@
            [$style.whiteBg]:barFixed,
            [$style.fixed]:barFixed
             }" v-if="unpracticedList.length!==0">
-                {{moduleName}}&nbsp;未练习&nbsp;({{unpracticedNumber}}/{{practicedNumber+ unpracticedNumber}})
+                Module{{moduleName}}&nbsp;未练习&nbsp;({{unpracticedNumber}}/{{practicedNumber + unpracticedNumber}})
             </div>
             <div :class="$style.wordsBox" v-for="item in unpracticedList">
                 <div :class="$style.word">
@@ -56,7 +56,7 @@
 <script>
     import apiCall from 'util/xhr'
     import {cache} from 'util/global'
-    import {Indicator,MessageBox} from 'mint-ui';
+    import {Indicator, MessageBox} from 'mint-ui';
 
     export default {
         data() {
@@ -67,11 +67,11 @@
                 barFixed: false,
                 practicedNumber: 0,
                 unpracticedNumber: 0,
-                btnTxt:"开始练习"
+                btnTxt: "开始练习"
             }
         },
         created() {
-         this.init();
+            this.init();
         },
         mounted() {
 //          this.$nextTick(()=>{
@@ -79,60 +79,65 @@
 //          })
         },
         methods: {
-            init(){
+            init() {
                 Indicator.open();
                 let {type = "", module = ""} = this.$route.query;
                 apiCall.post("/tkt/moduleOrWrongWordOverview", {
                     type,
                     module
                 }).then((data) => {
-                    this.practicedList= data.wordList.practiced || [];
-                    this.unpracticedList =data.wordList.unpracticed || [];
+                    this.practicedList = data.wordList.practiced || [];
+                    this.unpracticedList = data.wordList.unpracticed || [];
                     this.practicedNumber = this.practicedList.length || 0;
                     this.unpracticedNumber = this.unpracticedList.length || 0;
-                    if(this.practicedNumber ===0){
-                        this.btnTxt ="开始练习"
-                    }else if(this.unpracticedNumber!==0&& this.practicedNumber!==0){
-                        this.btnTxt ="继续练习"
+                    if (this.practicedNumber === 0) {
+                        this.btnTxt = "开始练习"
+                    } else if (this.unpracticedNumber !== 0 && this.practicedNumber !== 0) {
+                        this.btnTxt = "继续练习"
+                    }
+                    if (this.practicedNumber === 0) {
+                        this.barFixed = true;
                     }
                     Indicator.close();
                 });
                 this.moduleName = module
             },
-            onScroll:function (e,position) {
-                let offsetTop = document.querySelector(`.${this.$style.unPracticed}`).offsetTop
-                if (position.scrollTop >= offsetTop) {
-                    this.barFixed = true
-                } else {
-                    this.barFixed = false
+            onScroll: function (e, position) {
+                if(this.practicedNumber !== 0) {
+                    let offsetTop = document.querySelector(`.${this.$style.unPracticed}`).offsetTop
+                    if (position.scrollTop >= offsetTop) {
+                        this.barFixed = true
+                    } else {
+                        this.barFixed = false
+                    }
                 }
 
             },
-            goResult () {
+            goResult() {
                 cache.remove("batchId");
                 cache.remove("iscomplete");
                 cache.remove("resultData");
                 cache.remove("wrongList");
-                this.$router.push({path:"practicedResult"});
+                this.$router.push({path: "practicedResult"});
             },
-            modeAgain(){
-                let { module = ""} = this.$route.query;
-                apiCall.post("/tkt/replay",{
-                    module:module
+            modeAgain() {
+                let {module = ""} = this.$route.query;
+                apiCall.post("/tkt/replay", {
+                    module: module
                 }).then(() => {
                     Indicator.close();
                     MessageBox({
-                        message:"已练习将会清空，错词本会保留。确定要重头再来吗？",
+                        message: "已练习将会清空，错词本会保留。确定要重头再来吗？",
                         showConfirmButton: true,
-                        showCancelButton:true,
-                        title:"",
-                        cancelButtonText:"取消",
-                        confirmButtonText:"确定",
-                        closeOnClickModal:false
+                        showCancelButton: true,
+                        title: "",
+                        cancelButtonText: "取消",
+                        confirmButtonText: "确定",
+                        closeOnClickModal: false
                     }).then(action => {
-                        if(action === "cancel"){
+                        if (action === "cancel") {
 
-                        }else{
+                        } else {
                             this.init();
                         }
 
@@ -145,18 +150,20 @@
 </script>
 
 <style lang="less" module>
-    .wrapper{
+    .wrapper {
         height: 100%;
         background: #EFEFF4;
         overflow-y: scroll;
         padding-top: 122px;
         padding-bottom: 200px;
     }
-    .fixed{
+
+    .fixed {
         position: fixed;
-        top:0;
+        top: 0;
     }
-    .btn{
+
+    .btn {
         background: #FFE034;
         box-shadow: 0 8px 20px 0 rgba(255, 224, 52, 0.65);
         border-radius: 80px;
@@ -171,9 +178,10 @@
         left: 50%;
         transform: translateX(-50%);
     }
+
     .whiteBg {
         background: #fff !important;
-        box-shadow: 0 12px 12px 0 rgba(166,166,166,0.12);
+        box-shadow: 0 12px 12px 0 rgba(166, 166, 166, 0.12);
     }
 
     　.practiced {
@@ -187,8 +195,9 @@
             margin-bottom: 44px;
         }
     }
-    .unPracticed{
-        .header{
+
+    .unPracticed {
+        .header {
             text-align: center;
             font-size: 32px;
             width: 750px;
@@ -198,22 +207,23 @@
             margin-bottom: 44px;
         }
     }
-    .wordsBox{
+
+    .wordsBox {
         font-size: 32px;
         color: #8E8E93;
         margin-bottom: 24px;
         padding: 0 30px;
-        .word{
+        .word {
             display: flex;
             align-items: center;
-            >div{
+            > div {
                 margin-right: 28px;
             }
-            .name{
+            .name {
                 color: #000;
             }
         }
-        .tips{
+        .tips {
             margin-top: 10px;
             display: flex;
             align-items: center;
