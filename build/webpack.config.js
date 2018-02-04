@@ -9,7 +9,7 @@ function resolve(dir) {
 
 let webpackConfig = {
     entry: {
-        app: './src/main.js'
+        app: './src/main.ts'
     },
     output: {
         path: config.build.assetsRoot,
@@ -20,7 +20,7 @@ let webpackConfig = {
             : config.dev.assetsPublicPath ,
     },
     resolve: {
-        extensions: ['.js','.vue', '.json'],
+        extensions: ['.js','.vue', '.json','.ts'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
             'screens': resolve('src/screens'),
@@ -34,6 +34,14 @@ let webpackConfig = {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 exclude: /node_modules\/(?!vue2-touch)/
+            },
+            {
+                test: /\.tsx?$/,
+                loader: 'ts-loader',
+                exclude: /node_modules/,
+                options: {
+                    appendTsSuffixTo: [/\.vue$/],
+                }
             },
             {
                 test: /\.vue$/,

@@ -10,7 +10,7 @@ let merge = require("webpack-merge");
 
 module.exports = merge(baseWebpackConfig,{
     entry: {
-        app: ['./mocks/index.js','./src/main.js','webpack-hot-middleware/client?reload=true']
+        app: ['./mocks/index.js','./src/main.ts','webpack-hot-middleware/client?reload=true']
     },
     module: {
         rules: [...styleLoaderConf.styleLoaders({sourceMap: true})]

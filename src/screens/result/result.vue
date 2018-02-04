@@ -1,15 +1,13 @@
 <template>
     <div :class="$style.resultWrapper">
         <answer :word="this.newWord" v-if="this.newWord.length!==0 && !iscomplete"
-                :title="resultTitle" :isFinish="isFinish" :noKnowBtn="noKnowBtn"
-                :isNeedDelete="isNeedDelete"
-        ></answer>
+                :title="resultTitle" :isFinish="isFinish" :noKnowBtn="noKnowBtn"></answer>
         <div v-else-if="iscomplete">
             <div :class="$style.resultBox">
                 <div :class="$style.header">
                     <div :class="$style.title">
                         本次正确率 <span :class="$style.percent">
-                        {{Math.floor(rightNumber / answerNumber * 100)}}%</span>
+                        {{Math.floor(rightNumber / (answerNumber || 1) * 100)}}%</span>
                     </div>
                     <div :class="$style.process">
                         <div>
@@ -21,8 +19,8 @@
                         <div>
                             错误：{{wrongNumber}}
                         </div>
-                        <div v-show="resultMode && resultMode=='practiced'">
-                           总进度：{{parseInt(practicedNo) + rightNumber + wrongNumber}}/{{totalNo}}
+                        <div>
+                           总进度：{{practicedNo}}/{{totalNo}}
                         </div>
                     </div>
                 </div>
@@ -76,15 +74,14 @@
             isNeedDelete: {
                 type: Boolean,
                 default: false
-            },
-            resultMode: String
+            }
         },
         data() {
             return {
                 newWord: [],
                 module: [],
                 iscomplete: false,
-                answerNumber: 1,
+                answerNumber: 0,
                 rightNumber: 0,
                 wrongNumber: 0,
                 wrongWordsList: [],
@@ -95,9 +92,9 @@
         },
         created() {
             let batchId = cache.get("batchId") || "";
-            this.totalNo = cache.get("totalNo") || 0;
-            this.practicedNo = cache.get("practicedNo") || 0;
-            this.wrongWordNo = cache.get("wrongWordNo") || 0;
+//            this.totalNo = cache.get("totalNo") || 0;
+//            this.practicedNo = cache.get("practicedNo") || 0;
+//            this.wrongWordNo = cache.get("wrongWordNo") || 0;
             this.iscomplete = cache.get("iscomplete") || "";
             if (this.iscomplete) {
                 let rightNumber = 0;
@@ -112,15 +109,18 @@
                         wrongNumber++;
                     }
                 });
-                this.wrongWordsList = cache.get("wrongList") || [];
+                let cacheWrongList = cache.get("wrongList") || "[]";
+                this.wrongWordsList = JSON.parse(cacheWrongList) || [];
                 this.wrongNumber = wrongNumber;
                 this.rightNumber = rightNumber;
+                this.fetchTktOverview();
 
             } else {
-
+                let {module = ""} = this.$route.query;
                 apiCall.post("/tkt/answerList", {
                     praticType: this.practicType,
-                    batchId: batchId
+                    batchId: batchId,
+                    module:module
                 }).then((data) => {
                     cache.set("batchId", data.batchId);
                     for (let item of data.answerlist) {
@@ -178,10 +178,19 @@
                 });
                 this.wrongNumber = wrongNumber;
                 this.rightNumber = rightNumber;
-                this.iscomplete = iscomplete
+                this.iscomplete = iscomplete;
+                this.fetchTktOverview();
             },
             goHomePage() {
                 this.$router.push({path: "index"})
+            },
+            fetchTktOverview(){
+                apiCall.post("/tkt/getTKTOverview").then((data) => {
+                    this.practicedNo = data.practicedNo;
+                    this.totalNo = data.totalNo;
+//                    this.practiced = data.practiced;
+//                    this.wrongWordNo = data.wrongWordNo;
+                })
             }
 
         },

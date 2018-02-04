@@ -1,9 +1,10 @@
 <template>
     <div :class="$style.Rwapper">
         <answer :word="wrongWord" title="错词复习"  :wordType="0"
-                :noKnowBtn="true" v-if="wrongWord.length!==0 && !isReciteComplete" :isFinish="isFinish"></answer>
+                :noKnowBtn="true" v-if="wrongWord.length!==0 && !isReciteComplete"
+                :isFinish="isFinish"  :isNoNeedWrongBookTips="true"></answer>
         <div v-else-if="isReciteComplete || newWord.length > 0">
-            <div :class="$style.review" v-show="wrongWord.length!==0">
+            <div :class="$style.review" v-show="wrongWord.length!==0 && reviewTxt">
                 <div>
                     <p>复习完成！</p>
                     <p>开始背新单词。</p>
@@ -54,7 +55,8 @@
                 wrongWord: [],
                 newWord: [],
                 module: {},
-                isReciteComplete: false
+                isReciteComplete: false,
+                reviewTxt : false
             }
         },
         created() {
@@ -62,7 +64,8 @@
 
         },
         mounted() {
-            this.isReciteComplete = cache.get("isReciteComplete") || false;
+            this.isReciteComplete = cache.get("isReciteComplete") === "true";
+            this.reviewTxt = cache.get("reviewTxt") === "true";
 //            let batchId = cache.get("batchId") || "";
             Indicator.open();
             apiCall.post("/tkt/answerList", {
@@ -104,11 +107,10 @@
         },
         methods: {
             isFinish() {
-                let isReciteComplete = cache.get("isReciteComplete") || true;
-                if (!cache.get("isReciteComplete")) {
-                    cache.set("isReciteComplete", true);
-                }
-                this.isReciteComplete = isReciteComplete
+                cache.set("isReciteComplete", true);
+                cache.set("reviewTxt", true);
+                this.reviewTxt = cache.get("reviewTxt") === "true";
+                this.isReciteComplete = cache.get("isReciteComplete") === "true";
             },
             startTraning(){
 //                cache.remove("batchId");

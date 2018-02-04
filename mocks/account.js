@@ -4,13 +4,13 @@ Mock.mock(/ntce-c\/tkt\/login/, 'post', function (options) {
     return Mock.mock({
             "code": 10000,
             "msg": "ok",
-            "data": {
+            "data": JSON.stringify({
                 token : 'x',      // 后续接口验证身份用
                 uid: "x",			  // 用户id
                 avatarUrl: 'x',	  // 用户头像URL
                 nickname: 'x',    // 用户昵称，如果有
                 'isNew':'Y' //是否首次获取  Y-首次，N-非首次
-            }
+            })
         }
     )
 });
@@ -20,13 +20,13 @@ Mock.mock(/ntce-c\/tkt\/answerList/, 'post', function (options) {
     return Mock.mock({
             "code": 10000,
             "msg": "ok",
-            "data": {
+            "data": JSON.stringify({
                 batchId: 'x',//批次号
                 status:'x', //进度
                 total:'x',  //总数
                 answerlist: [{
                     'type': '0',	//类别 0-错词复习，1-新单词
-                    'answers|10': [{
+                    'answers': [{
                         'module': "module1",		 //module1、module2、module3……
                         'currectOption': 'A', //正确答案
                         'word': '纷纷', //单词
@@ -46,7 +46,7 @@ Mock.mock(/ntce-c\/tkt\/answerList/, 'post', function (options) {
                     ],
                 },{
                     'type': '1',
-                    'answers|10': [{
+                    'answers': [{
                         'module': 'module2',
                         'currectOption': 'A',
                         'pos':'adj.',
@@ -63,7 +63,7 @@ Mock.mock(/ntce-c\/tkt\/answerList/, 'post', function (options) {
                     }
                     ],
                 }],
-            }
+            })
         }
     )
 });

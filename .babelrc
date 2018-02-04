@@ -14,7 +14,8 @@
               "libraryName": "mint-ui",
               "style": true
             }
-          ]]
+          ]],
+    "transform-decorators-legacy"
   ],
   "env": {
     "test": {

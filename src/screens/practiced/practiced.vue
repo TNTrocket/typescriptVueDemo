@@ -45,7 +45,7 @@
             </div>
         </div>
         <div :class="$style.btn" @click="modeAgain" v-if="unpracticedNumber === 0">
-            重练一次
+            {{againTxt}}
         </div>
         <div :class="$style.btn" @click="goResult" v-else>
             {{btnTxt}}
@@ -53,10 +53,13 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
     import apiCall from 'util/xhr'
     import {cache} from 'util/global'
-    import {Indicator, MessageBox} from 'mint-ui';
+    import {Indicator, MessageBox} from 'mint-ui'
+    import Vue from 'vue'
+    import Component from 'vue-class-component'
+    import { Getter, Action } from 'vuex-class'
 
     export default {
         data() {
@@ -67,16 +70,15 @@
                 barFixed: false,
                 practicedNumber: 0,
                 unpracticedNumber: 0,
-                btnTxt: "开始练习"
+                btnTxt: "开始练习",
+                againTxt: ""
             }
         },
         created() {
             this.init();
         },
         mounted() {
-//          this.$nextTick(()=>{
-//
-//          })
+
         },
         methods: {
             init() {
@@ -98,6 +100,18 @@
                     if (this.practicedNumber === 0) {
                         this.barFixed = true;
                     }
+                    this.againTxt = "重练一次";
+                    this.$nextTick(() => {
+                        if (this.practicedNumber !== 0) {
+                            let clientHeight = document.documentElement.clientHeight;
+                            let wrapperScrollHeight = document.querySelector(`.${this.$style.wrapper}`).scrollHeight;
+                            if (wrapperScrollHeight > clientHeight) {
+                                let offsetTop = document.querySelector(`.${this.$style.unPracticed}`).offsetTop;
+                                let scrollPX = offsetTop -(clientHeight/2) >0 ? offsetTop -(clientHeight/2): 0;
+                                document.querySelector(`.${this.$style.wrapper}`).scrollTop = scrollPX;
+                            }
+                        }
+                    });
                     Indicator.close();
                 });
                 this.moduleName = module
@@ -118,32 +132,37 @@
                 cache.remove("iscomplete");
                 cache.remove("resultData");
                 cache.remove("wrongList");
-                this.$router.push({path: "practicedResult"});
+                let {module = ""} = this.$route.query;
+                this.$router.push({
+                    path: "practicedResult", query: {
+                        module: module
+                    }
+                });
             },
             modeAgain() {
-                let {module = ""} = this.$route.query;
-                apiCall.post("/tkt/replay", {
-                    module: module
-                }).then(() => {
-                    Indicator.close();
-                    MessageBox({
-                        message: "已练习将会清空，错词本会保留。确定要重头再来吗？",
-                        showConfirmButton: true,
-                        showCancelButton: true,
-                        title: "",
-                        cancelButtonText: "取消",
-                        confirmButtonText: "确定",
-                        closeOnClickModal: false
-                    }).then(action => {
-                        if (action === "cancel") {
+                MessageBox({
+                    message: "已练习将会清空，错词本会保留。确定要重头再来吗？",
+                    showConfirmButton: true,
+                    showCancelButton: true,
+                    title: "",
+                    cancelButtonText: "取消",
+                    confirmButtonText: "确定",
+                    closeOnClickModal: false
+                }).then(action => {
+                    if (action === "cancel") {
 
-                        } else {
+                    } else {
+                        Indicator.open();
+                        let {module = ""} = this.$route.query;
+                        apiCall.post("/tkt/replay", {
+                            module: module
+                        }).then(() => {
                             this.init();
-                        }
+                            Indicator.close();
+                        })
+                    }
+                });
 
-                    });
-
-                })
             }
         }
     }

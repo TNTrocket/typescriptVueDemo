@@ -26,65 +26,63 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
     import apiCall from 'util/xhr'
     import {mapState, mapActions, mapMutations, mapGetters} from 'vuex'
     import {Indicator, MessageBox} from 'mint-ui';
     import {cache} from 'util/global';
+    import Vue from 'vue'
+    import Component from 'vue-class-component'
+    import { Getter, Action } from 'vuex-class'
+
+    @Component({})
+    export default class Login extends Vue {
+        @Action('login') dispatchLogin: Function;
+
+        $refs: {
+            phone: HTMLFormElement,
+            password:HTMLFormElement
+        };
 
 
-    export default {
-//        data() {
-//            return {
-//                targetUrl: ""
-//            }
-//        },
         created() {
             cache.remove("token");
-        },
+//            console.log(this.$style.btn);
+        }
         mounted() {
 
-        },
-        methods: {
-            login: function () {
-                this.validateForm();
-            },
-            validateForm() {
-                this.$validator.validateAll({
-                    phone: this.$refs.phone.value,
-                    password: this.$refs.password.value
-                }).then((result) => {
-                    if (result) {
-                        Indicator.open();
-                        this.dispatchLogin({
-                            mobile: this.$refs.phone.value,
-                            password: this.$refs.password.value,
-                        }).then(()=>{
-                            Indicator.close();
-                            this.$router.push({path: 'index'})
-                        },()=>{
-                            Indicator.close();
-                            MessageBox({
-                                message:"手机号或密码错误",
-                                showConfirmButton: true,
-                                title:"",
-                                confirmButtonText:"确认",
-                                closeOnClickModal:false
-                            });
-                        });
-                        return;
-                    }
-                });
-            },
-            ...mapActions({
-                    dispatchLogin: "login"
-                }
-            ),
-            clearErrors() {
-                this.errors.clear();
-            }
+        }
 
-        },
+        login(){
+            this.validateForm();
+        }
+        validateForm() {
+            this.$validator.validateAll({
+                phone: this.$refs.phone.value,
+                password: this.$refs.password.value
+            }).then((result) => {
+                if (result) {
+                    Indicator.open();
+                    this.dispatchLogin({
+                        mobile: this.$refs.phone.value,
+                        password: this.$refs.password.value,
+                    }).then(()=>{
+                        Indicator.close();
+                        this.$router.push({path: 'index'})
+                    },()=>{
+                        Indicator.close();
+                        MessageBox({
+                            message:"手机号或密码错误",
+                            showConfirmButton: true,
+                            title:"",
+                            confirmButtonText:"确认",
+                            closeOnClickModal:false
+                        });
+                    });
+                    return;
+                }
+            });
+        }
     }
 </script>
 

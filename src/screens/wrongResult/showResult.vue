@@ -2,14 +2,14 @@
     <div :class="$style.resultWrapper">
         <answer :word="this.newWord" v-if="this.newWord.length!==0 && !iscomplete"
                 :title="resultTitle" :isFinish="isFinish" :noKnowBtn="noKnowBtn"
-                :isPropsNeedDelete="isPropsNeedDelete" :wordType="0"
+                :isPropsNeedDelete="isPropsNeedDelete" :wordType="0" :isNoNeedWrongBookTips="true"
         ></answer>
         <div v-else-if="iscomplete">
             <div :class="$style.resultBox">
                 <div :class="$style.header">
                     <div :class="$style.title">
                         本次正确率 <span :class="$style.percent">
-                        {{Math.floor(rightNumber / answerNumber * 100)}}%</span>
+                        {{Math.floor(rightNumber / (answerNumber || 1) * 100)}}%</span>
                     </div>
                     <div :class="$style.process">
                         <div>
@@ -85,27 +85,25 @@
                 newWord: [],
                 module: [],
                 iscomplete: false,
-                answerNumber: 1,
+                answerNumber: 0,
                 rightNumber: 0,
                 wrongNumber: 0,
                 wrongWordsList: [],
-                totalNo: 0,
-                practicedNo: 0,
                 wrongWordNo: 0,
-                originAnswerNumber: 0,
                 deleteWordList: [],
                 isNeedDelete:false
             }
         },
         created() {
             let batchId = cache.get("batchId") || "";
-            this.totalNo = cache.get("totalNo") || 0;
-            this.practicedNo = cache.get("practicedNo") || 0;
-            this.wrongWordNo = cache.get("wrongWordNo") || 0;
+//            this.totalNo = cache.get("totalNo") || 0;
+//            this.practicedNo = cache.get("practicedNo") || 0;
+//            this.wrongWordNo = cache.get("wrongWordNo") || 0;
             this.iscomplete = cache.get("iscomplete") || "";
             let {praticType = "", module = ""} = this.$route.query;
             if (this.iscomplete) {
                 this.isFinish();
+                this.fetchTktOverview();
             } else {
                 apiCall.post("/tkt/answerList", {
                     praticType: praticType,
@@ -130,7 +128,7 @@
                             });
                             this.newWord = item.answers;
                             this.module = temp;
-                            this.originAnswerNumber = item.answers.length;
+//                            this.originAnswerNumber = item.answers.length;
                         }
                     }
                 })
@@ -156,6 +154,7 @@
                 let batchId = cache.get("batchId") || "";
                 let {praticType = "", module = ""} = this.$route.query;
                 Indicator.open();
+                this.fetchTktOverview();
                 apiCall.post("/tkt/answerList", {
                     praticType: praticType,
                     batchId: batchId,
@@ -168,12 +167,13 @@
                             let rightNumber = 0;
                             let wrongNumber = 0;
                             let deleteList = [];
-                            let deleteObj = {};
                             item.answers.forEach((res, index) => {
+                                let deleteObj = {};
                                 if (res.currectOption === res.finalOption) {
                                     rightNumber++;
-                                    deleteObj.wordId = res.questionId;
+                                    deleteObj.wordId = res.currectOptionId;
                                     deleteObj.delete = "1";
+                                    deleteList.push(deleteObj);
                                 } else if (res.finalOption) {
                                     wrongNumber++;
                                     for (let options of res.options) {
@@ -184,7 +184,6 @@
                                     tempArray.push(res);
                                 }
                             });
-                            deleteList.push(deleteObj);
                             this.deleteWordList = deleteList;
                             this.rightNumber = rightNumber;
                             if(this.rightNumber>0){
@@ -193,9 +192,9 @@
                             this.wrongNumber = wrongNumber;
                             this.answerNumber = item.answers.length;
                             this.wrongWordsList = tempArray;
-                            if (this.originAnswerNumber > this.answerNumber) {
-                                this.wrongWordNo = this.wrongWordNo - (this.originAnswerNumber - this.answerNumber)
-                            }
+//                            if (this.originAnswerNumber > this.answerNumber) {
+//                                this.wrongWordNo = this.wrongWordNo - (this.originAnswerNumber - this.answerNumber)
+//                            }
                         }
                     }
                 })
@@ -233,6 +232,14 @@
                     }
 
                 });
+            },
+            fetchTktOverview(){
+                apiCall.post("/tkt/getTKTOverview").then((data) => {
+//                    this.practicedNo = data.practicedNo;
+//                    this.totalNo = data.totalNo;
+//                    this.practiced = data.practiced;
+                    this.wrongWordNo = data.wrongWordNo;
+                })
             }
 
         },

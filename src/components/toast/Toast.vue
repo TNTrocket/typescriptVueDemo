@@ -61,21 +61,29 @@
     }
 </style>
 
-<script>
-    export default {
-        data() {
-            return {}
-        },
+<script lang="ts">
+    import Vue from 'vue'
+    import Component from 'vue-class-component'
+    import { Getter, Action, State } from 'vuex-class'
+
+    @Component({
         props: {
             showToast: {
                 type: Boolean,
                 default: true
             }
 
-        },
+        }
+    })
+
+    export default class Toast extends Vue{
+//        data() {
+//            return {}
+//        },
+
         mounted() {
 
-        },
-        methods: {}
+        }
+//        methods: {}
     }
 </script>

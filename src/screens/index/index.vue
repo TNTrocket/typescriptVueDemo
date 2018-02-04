@@ -1,7 +1,7 @@
 <template>
     <div :class="$style.bothWapper">
         <div v-if="isNew==='Y'">
-            <first></first>
+            <First></First>
         </div>
         <div :class="$style.indexWapper" v-else-if="isNew ==='N'">
             <div :class="$style.content">
@@ -60,9 +60,9 @@
                     <div :class="$style.doneTxt">
                         <span>恭喜！所有单词都背完啦！</span>
                         <span :class="$style.again">
-                        <span @click="again">从头再来</span>
-                        <span :class="$style.doneArrow"></span>
-                    </span>
+                         <span @click="again">从头再来</span>
+                         <span :class="$style.doneArrow"></span>
+                        </span>
                     </div>
                 </div>
                 <div v-else :class="$style.btn" @click="startRecite">
@@ -71,33 +71,48 @@
             </div>
         </div>
         <div v-else>
-            <toast></toast>
+            <Toast></Toast>
         </div>
     </div>
 </template>
 
-<script>
+<script lang="ts">
     import apiCall from 'util/xhr'
-    import first from "./first.vue"
+    import First from "./First.vue"
     import {mapState, mapActions, mapMutations, mapGetters} from 'vuex'
     import {cache} from 'util/global'
     import {Indicator, MessageBox} from 'mint-ui';
-    import toast from 'components/toast/Toast';
+    import Toast from 'components/toast/Toast.vue';
+    import Vue from 'vue'
+    import Component from 'vue-class-component'
+    import { Getter, Action, State } from 'vuex-class'
 
-    export default {
-        data() {
-            return {
-                isDone: false,
-                practicedNo: 0,
-                totalNo: 0,
-                practiced: {},
-                wrongWordModules: {},
-                wrongWordNo: 0
-            }
-        },
+    @Component({
+        components: {
+            First,
+            Toast
+        }
+    })
+//    interface goPracticed {
+//        module: string;
+//    }
+    export default class index extends Vue{
+        @Action("changeIsNew") changeStatus: Function;
+        @State(state =>state.user.isNew) isNew;
+        isDone:boolean = false;
+        practicedNo:number = 0;
+        totalNo:number = 0;
+        practiced:object = {};
+        wrongWordModules:object = {};
+        wrongWordNo:number = 0;
+//        data() {
+//            return {
+//
+//            }
+//        }
         created() {
-
-        },
+//         console.log(this.$style);
+        }
         mounted() {
             this.changeStatus({});
             if (this.isNew === "Y") {
@@ -110,7 +125,7 @@
                     this.practiced = data.practiced;
                     this.wrongWordModules = data.wrongWordModules;
                     this.wrongWordNo = data.wrongWordNo;
-                    this.isDone = this.practicedNo === this.totalNo & this.totalNo != 0;
+                    this.isDone = this.practicedNo === this.totalNo && this.totalNo != 0;
                     cache.set("totalNo", this.totalNo);
                     cache.set("practicedNo", this.practicedNo);
                     cache.set("wrongWordNo", this.wrongWordNo);
@@ -119,37 +134,37 @@
 
                 })
             }
-        },
-        components: {
-            first,
-            toast
-        },
-        methods: {
+        }
+//        methods: {
             startRecite() {
                 cache.remove("isReciteComplete");
                 this.$router.push({path: "recite"})
-            },
-            goPracticed(module) {
+            }
+
+            goPracticed(module:string) {
                 let moduleId = module.match(/\d+/g);
                 this.$router.push({
-                    path: "practiced", query: {
-                        type: 0,
+                    path: "practiced",
+                    query: {
+                        type: "0",
                         module: moduleId[0]
                     }
                 })
-            },
-            gowrongTxt(type, module) {
+            }
+
+            gowrongTxt(type:string, module:string) {
                 let moduleId =[];
                 if(module) {
                      moduleId = module.match(/\d+/g);
                 }
                 this.$router.push({
-                    path: "wrongTxt", query: {
+                    path: "wrongTxt",
+                    query: {
                         type,
                         module: moduleId[0] ? moduleId[0] : ""
                     }
                 })
-            },
+            }
             again() {
                 Indicator.open();
                 apiCall.post("/tkt/replay").then(() => {
@@ -173,19 +188,19 @@
                     });
 
                 })
-            },
-            ...mapActions({
-                changeStatus: "changeIsNew"
-            })
+            }
+//            ...mapActions({
+//                changeStatus: "changeIsNew"
+//            })
 
-        },
-        computed: {
-            ...mapState({
-                isNew: state => {
-                    return state.user.isNew
-                }
-            }),
-        },
+//        },
+//        computed: {
+//            ...mapState({
+//                isNew: state => {
+//                    return state.user.isNew
+//                }
+//            }),
+//        },
     }
 </script>
 

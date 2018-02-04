@@ -14,12 +14,16 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
     import apiCall from 'util/xhr'
     import {cache} from 'util/global'
     import {mapState, mapActions, mapMutations, mapGetters} from 'vuex'
-
-    export default {
+    import Vue from 'vue'
+    import Component from 'vue-class-component'
+    import { Getter, Action } from 'vuex-class'
+    @Component
+    export default class First extends Vue {
+        @Action("changeIsNew") changeStatus: Function;
 //        data() {
 //            return {
 //                targetUrl: ""
@@ -27,21 +31,21 @@
 //        },
         created() {
 
-        },
+        }
         mounted() {
 
-        },
-        methods: {
-            startRecite: function () {
+        }
+//        methods: {
+            startRecite() {
                 cache.set("isNew","N");
                 this.changeStatus({isNew:"N"});
                 cache.remove("isReciteComplete");
-                this.$router.push({path: "recite"})
-            },
-            ...mapActions({
-                changeStatus: "changeIsNew"
-            })
-        }
+                this.$router.push({path: "recite"});
+            }
+//            ...mapActions({
+//                changeStatus: "changeIsNew"
+//            })
+//        }
     }
 </script>
 
