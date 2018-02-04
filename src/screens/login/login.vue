@@ -2,7 +2,7 @@
     <div :class="$style.wrapper">
         <div :class="$style.loginForm">
             <div :class="$style.title">
-                请使用尚德机构APP的手机号登录
+                登录
             </div>
             <div :class="$style.inputBox">
                 <input name="phone" type="text" ref="phone" placeholder="请输入手机号码"
@@ -20,7 +20,6 @@
                 登录
             </div>
             <div :class="$style.tips">
-                温馨提示：注册新账号可以下载“尚德机构”APP
             </div>
         </div>
     </div>
