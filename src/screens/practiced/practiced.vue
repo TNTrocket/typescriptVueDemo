@@ -59,111 +59,134 @@
     import {Indicator, MessageBox} from 'mint-ui'
     import Vue from 'vue'
     import Component from 'vue-class-component'
-    import { Getter, Action } from 'vuex-class'
+    import {Getter, Action} from 'vuex-class'
 
-    export default {
-        data() {
-            return {
-                moduleName: "",
-                practicedList: [],
-                unpracticedList: [],
-                barFixed: false,
-                practicedNumber: 0,
-                unpracticedNumber: 0,
-                btnTxt: "开始练习",
-                againTxt: ""
-            }
-        },
+    @Component
+    export default class  extends Vue {
+//        data() {
+//            return {
+        moduleName: string =""
+
+        practicedList: Array<any> 
+
+        unpracticedList: Array<any>
+
+        barFixed:boolean = false
+
+        practicedNumber: number = 0
+
+        unpracticedNumber: number = 0
+
+        btnTxt:string = "开始练习"
+
+        againTxt:string = ""
+
+        $style: {
+            unPracticed:string,
+            wrapper:string
+        }
+        // Element:{
+        //     offsetTop:number
+        // }
+//            }
+//        }
         created() {
             this.init();
-        },
+        }
+
         mounted() {
 
-        },
-        methods: {
-            init() {
-                Indicator.open();
-                let {type = "", module = ""} = this.$route.query;
-                apiCall.post("/tkt/moduleOrWrongWordOverview", {
-                    type,
-                    module
-                }).then((data) => {
-                    this.practicedList = data.wordList.practiced || [];
-                    this.unpracticedList = data.wordList.unpracticed || [];
-                    this.practicedNumber = this.practicedList.length || 0;
-                    this.unpracticedNumber = this.unpracticedList.length || 0;
-                    if (this.practicedNumber === 0) {
-                        this.btnTxt = "开始练习"
-                    } else if (this.unpracticedNumber !== 0 && this.practicedNumber !== 0) {
-                        this.btnTxt = "继续练习"
-                    }
-                    if (this.practicedNumber === 0) {
-                        this.barFixed = true;
-                    }
-                    this.againTxt = "重练一次";
-                    this.$nextTick(() => {
-                        if (this.practicedNumber !== 0) {
-                            let clientHeight = document.documentElement.clientHeight;
-                            let wrapperScrollHeight = document.querySelector(`.${this.$style.wrapper}`).scrollHeight;
-                            if (wrapperScrollHeight > clientHeight) {
-                                let offsetTop = document.querySelector(`.${this.$style.unPracticed}`).offsetTop;
-                                let scrollPX = offsetTop -(clientHeight/2) >0 ? offsetTop -(clientHeight/2): 0;
-                                document.querySelector(`.${this.$style.wrapper}`).scrollTop = scrollPX;
-                            }
-                        }
-                    });
-                    Indicator.close();
-                });
-                this.moduleName = module
-            },
-            onScroll: function (e, position) {
-                if(this.practicedNumber !== 0) {
-                    let offsetTop = document.querySelector(`.${this.$style.unPracticed}`).offsetTop
-                    if (position.scrollTop >= offsetTop) {
-                        this.barFixed = true
-                    } else {
-                        this.barFixed = false
-                    }
+        }
+
+//        methods: {
+        init() {
+            Indicator.open();
+            let {type = "", module = ""} = this.$route.query;
+            apiCall.post("/tkt/moduleOrWrongWordOverview", {
+                type,
+                module
+            }).then((data) => {
+                this.practicedList = data.wordList.practiced || [];
+                this.unpracticedList = data.wordList.unpracticed || [];
+                this.practicedNumber = this.practicedList.length || 0;
+                this.unpracticedNumber = this.unpracticedList.length || 0;
+                if (this.practicedNumber === 0) {
+                    this.btnTxt = "开始练习"
+                } else if (this.unpracticedNumber !== 0 && this.practicedNumber !== 0) {
+                    this.btnTxt = "继续练习"
                 }
-
-            },
-            goResult() {
-                cache.remove("batchId");
-                cache.remove("iscomplete");
-                cache.remove("resultData");
-                cache.remove("wrongList");
-                let {module = ""} = this.$route.query;
-                this.$router.push({
-                    path: "practicedResult", query: {
-                        module: module
+                if (this.practicedNumber === 0) {
+                    this.barFixed = true;
+                }
+                this.againTxt = "重练一次";
+                this.$nextTick(() => {
+                    if (this.practicedNumber !== 0) {
+                        let clientHeight = document.documentElement.clientHeight;
+                        let wrapperScrollHeight = document.querySelector(`.${this.$style.wrapper}`).scrollHeight;
+                        if (wrapperScrollHeight > clientHeight) {
+                            let offsetDOm = <HTMLElement> document.querySelector(`.${this.$style.unPracticed}`);
+                            let offsetTop = offsetDOm.offsetTop;
+                            let scrollPX = offsetTop - (clientHeight / 2) > 0 ? offsetTop - (clientHeight / 2) : 0;
+                            document.querySelector(`.${this.$style.wrapper}`).scrollTop = scrollPX;
+                        }
                     }
                 });
-            },
-            modeAgain() {
-                MessageBox({
-                    message: "已练习将会清空，错词本会保留。确定要重头再来吗？",
-                    showConfirmButton: true,
-                    showCancelButton: true,
-                    title: "",
-                    cancelButtonText: "取消",
-                    confirmButtonText: "确定",
-                    closeOnClickModal: false
-                }).then(action => {
-                    if (action === "cancel") {
+                Indicator.close();
+            });
+            this.moduleName = module
+        }
 
-                    } else {
-                        Indicator.open();
-                        let {module = ""} = this.$route.query;
-                        apiCall.post("/tkt/replay", {
-                            module: module
-                        }).then(() => {
-                            this.init();
-                            Indicator.close();
-                        })
-                    }
-                });
-
+        onScroll(e, position) {
+            if (this.practicedNumber !== 0) {
+                  let offsetDOm = <HTMLElement> document.querySelector(`.${this.$style.unPracticed}`);
+                  let offsetTop = offsetDOm.offsetTop;
+                if (position.scrollTop >= offsetTop) {
+                    this.barFixed = true
+                } else {
+                    this.barFixed = false
+                }
             }
+
+        }
+
+        goResult() {
+            cache.remove("batchId");
+            cache.remove("iscomplete");
+            cache.remove("resultData");
+            cache.remove("wrongList");
+            let {module = ""} = this.$route.query;
+            this.$router.push({
+                path: "practicedResult", query: {
+                    module: module
+                }
+            });
+        }
+
+        modeAgain() {
+            MessageBox({
+                message: "已练习将会清空，错词本会保留。确定要重头再来吗？",
+                showConfirmButton: true,
+                showCancelButton: true,
+                title: "",
+                cancelButtonText: "取消",
+                confirmButtonText: "确定",
+                closeOnClickModal: false
+            }).then(action => {
+                if (action === "cancel") {
+
+                } else {
+                    Indicator.open();
+                    let {module = ""} = this.$route.query;
+                    apiCall.post("/tkt/replay", {
+                        module: module
+                    }).then(() => {
+                        this.init();
+                        Indicator.close();
+                    })
+                }
+            });
+
+//            }
         }
     }
 </script>

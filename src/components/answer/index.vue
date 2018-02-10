@@ -72,32 +72,44 @@
     import apiCall from 'util/xhr'
     import {cache} from 'util/global'
     import {Indicator, MessageBox} from 'mint-ui';
+    import Component from 'vue-class-component'
+    import Vue from 'vue'
 
-    export default {
-        props: {
-            word: {
-                type: Array,
-                default: true
-            },
-            title: String,
-            isFinish: {
-                type: Function,
-                default: () => {
+    @Component(
+        {
+            props: {
+                word: {
+                    type: Array,
+                    default: true
+                },
+                title: String,
+                isFinish: {
+                    type: Function,
+                    default: () => {
+                    }
+                },
+                noKnowBtn: {
+                    type: Boolean,
+                    default: false
+                },
+                isPropsNeedDelete: {
+                    type: Boolean,
+                    default: false
+                },
+                wordType: {
+                    type: Number,
+                    default: 1
                 }
             },
-            noKnowBtn: {
-                type: Boolean,
-                default: false
-            },
-            isPropsNeedDelete: {
-                type: Boolean,
-                default: false
-            },
-            wordType: {
-                type: Number,
-                default: 1
+            watch: {
+                currentAnswer: function () {
+                    this.keepStatus();
+                }
             }
-        },
+        }
+    )
+    export default class extends Vue {
+
         data() {
             return {
                 answerList: [],
@@ -107,7 +119,8 @@
                 wrongWordsList: [],
                 respondenceListLength: 0
             }
-        },
+        }
+
         created() {
             this.answerList = this.word;
             for (let item of this.answerList) {
@@ -115,173 +128,176 @@
                 this.respondenceList.push(temp)
             }
             this.respondenceListLength = this.respondenceList.length
-        },
+        }
+
         mounted() {
             this.keepStatus();
-        },
-        computed: {
-            currentList: function () {
-                return this.answerList[this.currentAnswer] || {}
-            },
-            questionId: function () {
-                return this.answerList[this.currentAnswer].questionId || ""
-            },
-            Pos: function () {
-                return this.answerList[this.currentAnswer].pos || ""
-            },
-            currectOptionId: function () {
-                return this.answerList[this.currentAnswer].currectOptionId || ""
+        }
+
+
+//        computed: {
+        get currentList() {
+            return this.answerList[this.currentAnswer] || {}
+        }
+
+        get questionId() {
+            return this.answerList[this.currentAnswer].questionId || ""
+        }
+
+
+        get Pos() {
+            return this.answerList[this.currentAnswer].pos || ""
+        }
+
+        get currectOptionId() {
+            return this.answerList[this.currentAnswer].currectOptionId || ""
+        }
+//    },
+
+    //        methods: {
+    respondence(data, index, unknow){
+        let finalOption = this.currentList.finalOption;
+        let isAnswer = finalOption ? finalOption : this.respondenceList[this.currentAnswer].isAnswer;
+        if (!isAnswer) {
+            let tempObj = {
+                isAnswer: true,
+                questionId: this.questionId,
+            };
+            if (data.option === this.currentList.currectOption) {
+                tempObj.isCurrent = true;
+            } else {
+                tempObj.isCurrent = false;
+                tempObj.index = index;
+                this.wrongWordsList.push(this.currentList)
             }
-        },
-        watch: {
-            currentAnswer: function () {
-                this.keepStatus();
-            }
-        },
-        methods: {
-            respondence(data, index,unknow) {
-                let finalOption = this.currentList.finalOption;
-                let isAnswer = finalOption ? finalOption : this.respondenceList[this.currentAnswer].isAnswer;
-                if (!isAnswer) {
-                    let tempObj = {
-                        isAnswer: true,
-                        questionId: this.questionId,
-                    };
-                    if (data.option === this.currentList.currectOption) {
-                        tempObj.isCurrent = true;
-                    } else  {
-                        tempObj.isCurrent = false;
-                        tempObj.index = index;
-                        this.wrongWordsList.push(this.currentList)
-                    }
-                    Indicator.open();
-                    apiCall.post("/tkt/feedbackList", {
-                        batchId: cache.get("batchId"),
-                        feedbackList: JSON.stringify(
-                            {
-                            feedbackList:[{
+            Indicator.open();
+            apiCall.post("/tkt/feedbackList", {
+                batchId: cache.get("batchId"),
+                feedbackList: JSON.stringify(
+                    {
+                        feedbackList: [{
                             isCurrent: tempObj.isCurrent ? 1 : 0,
                             questionId: this.questionId,
                             finalChoice: data.option,
                             type: this.wordType,
                             currectOptionId: this.currectOptionId
-                             }]
-                            }
-                        )
-                    }).then(() => {
-                        Indicator.close();
-                        this.$set(this.respondenceList, this.currentAnswer, tempObj)
-                    },()=>{
-                        Indicator.close();
-                        MessageBox({
-                            message:"答案提交失败，请检查网络后再试一次",
-                            showConfirmButton: true,
-                            title:"",
-                            confirmButtonText:"确认",
-                            closeOnClickModal:false
-                        });
-                    });
-                }
-            },
-            unKnow() {
-             this.respondence({option:"E"});
-            },
-            goNext() {
-                this.currentAnswer = this.currentAnswer + 1;
-            },
-            goPrev() {
-                this.currentAnswer = this.currentAnswer - 1;
-            },
-            handle(type) {
-                switch (type) {
-                    case "swipeleft":
-                        if (this.currentAnswer + 1 !== this.respondenceList.length) {
-                            this.currentAnswer = this.currentAnswer + 1;
-                        }
-                        break;
-                    case "swiperight":
-                        if (this.currentAnswer !== 0) {
-                            this.currentAnswer = this.currentAnswer - 1;
-                        }
-                }
-
-            },
-            finish() {
-                this.isFinish(this.respondenceList, this.wrongWordsList);
-            },
-            deleteWrong() {
+                        }]
+                    }
+                )
+            }).then(() => {
+                Indicator.close();
+                this.$set(this.respondenceList, this.currentAnswer, tempObj)
+            }, () => {
+                Indicator.close();
                 MessageBox({
-                    message:"确定要从错词本删除它？",
+                    message: "答案提交失败，请检查网络后再试一次",
                     showConfirmButton: true,
-                    showCancelButton:true,
-                    title:"",
-                    cancelButtonText:"取消",
-                    confirmButtonText:"删除",
-                    closeOnClickModal:false
-                }).then(action => {
-                    if(action === "cancel"){
-
-                    }else{
-
-                        Indicator.open();
-                        apiCall.post("/tkt/deleteWrongWordList", {
-                            batchId: cache.get("batchId"),
-                            feedbackList: JSON.stringify(
-                                {
-                                feedbackList: [{
-                                    wordId: this.currectOptionId,
-                                    delete: 1
-                                }]
-                            }
-                            )
-                        }).then(() => {
-                            Indicator.close();
-
-                            this.$delete(this.respondenceList, this.currentAnswer);
-                            this.$delete(this.answerList, this.currentAnswer);
-                            if (this.currentAnswer + 1 === this.respondenceListLength) {
-                                this.finish();
-                            } else {
-                                this.respondenceListLength = this.respondenceListLength - 1;
-                            }
-
-                        },()=>{
-                            Indicator.close();
-                            MessageBox({
-                                message:"答案提交失败，请检查网络后再试一次",
-                                showConfirmButton: true,
-                                title:"",
-                                confirmButtonText:"确认",
-                                closeOnClickModal:false
-                            });
-                        })
-
-                    }
-
+                    title: "",
+                    confirmButtonText: "确认",
+                    closeOnClickModal: false
                 });
-
-            },
-            keepStatus() {
-                let target = this.currentList.options || [];
-                let wrongChoice = "";
-                let wrongIndex = 0;
-                target.forEach((item, index) => {
-                    if (item.option === this.currentList.currectOption) {
-                        this.currentMeaning = item.meaning;
-                    }
-                    else if (this.currentList.finalOption && this.currentList.finalOption === item.option) {
-                        wrongChoice = item.option;
-                        wrongIndex = index;
-                    }
-                });
-                if (this.currentList.finalOption === this.currentList.currectOption || this.currentList.finalOption ==="E") {
-                    this.$set(this.respondenceList[this.currentAnswer], "isAnswer", true)
-                } else if (this.currentList.finalOption && this.currentList.finalOption !== this.currentList.currectOption) {
-                    this.$set(this.respondenceList[this.currentAnswer], "isAnswer", true);
-                    this.$set(this.respondenceList[this.currentAnswer], "index", wrongIndex)
+            });
+        }
+    }
+    unKnow(){
+        this.respondence({option: "E"});
+    }
+    goNext(){
+        this.currentAnswer = this.currentAnswer + 1;
+    }
+    goPrev(){
+        this.currentAnswer = this.currentAnswer - 1;
+    }
+    handle(type){
+        switch (type) {
+            case "swipeleft":
+                if (this.currentAnswer + 1 !== this.respondenceList.length) {
+                    this.currentAnswer = this.currentAnswer + 1;
                 }
+                break;
+            case "swiperight":
+                if (this.currentAnswer !== 0) {
+                    this.currentAnswer = this.currentAnswer - 1;
+                }
+        }
+
+    }
+    finish(){
+        this.isFinish(this.respondenceList, this.wrongWordsList);
+    }
+    deleteWrong(){
+        MessageBox({
+            message: "确定要从错词本删除它？",
+            showConfirmButton: true,
+            showCancelButton: true,
+            title: "",
+            cancelButtonText: "取消",
+            confirmButtonText: "删除",
+            closeOnClickModal: false
+        }).then(action => {
+            if (action === "cancel") {
+
+            } else {
+
+                Indicator.open();
+                apiCall.post("/tkt/deleteWrongWordList", {
+                    batchId: cache.get("batchId"),
+                    feedbackList: JSON.stringify(
+                        {
+                            feedbackList: [{
+                                wordId: this.currectOptionId,
+                                delete: 1
+                            }]
+                        }
+                    )
+                }).then(() => {
+                    Indicator.close();
+
+                    this.$delete(this.respondenceList, this.currentAnswer);
+                    this.$delete(this.answerList, this.currentAnswer);
+                    if (this.currentAnswer + 1 === this.respondenceListLength) {
+                        this.finish();
+                    } else {
+                        this.respondenceListLength = this.respondenceListLength - 1;
+                    }
+
+                }, () => {
+                    Indicator.close();
+                    MessageBox({
+                        message: "答案提交失败，请检查网络后再试一次",
+                        showConfirmButton: true,
+                        title: "",
+                        confirmButtonText: "确认",
+                        closeOnClickModal: false
+                    });
+                })
+
             }
-        },
+
+        });
+
+    }
+    keepStatus(){
+        let target = this.currentList.options || [];
+        let wrongChoice = "";
+        let wrongIndex = 0;
+        target.forEach((item, index) => {
+            if (item.option === this.currentList.currectOption) {
+                this.currentMeaning = item.meaning;
+            }
+            else if (this.currentList.finalOption && this.currentList.finalOption === item.option) {
+                wrongChoice = item.option;
+                wrongIndex = index;
+            }
+        });
+        if (this.currentList.finalOption === this.currentList.currectOption || this.currentList.finalOption === "E") {
+            this.$set(this.respondenceList[this.currentAnswer], "isAnswer", true)
+        } else if (this.currentList.finalOption && this.currentList.finalOption !== this.currentList.currectOption) {
+            this.$set(this.respondenceList[this.currentAnswer], "isAnswer", true);
+            this.$set(this.respondenceList[this.currentAnswer], "index", wrongIndex)
+        }
+    }
+    //        },
 
 
     }

@@ -1,15 +1,13 @@
 {
   "compilerOptions": {
-    "module": "es2015",
-    "moduleResolution": "node",
     "target": "es5",
-    "sourceMap": true,
+    "module": "es2015",
     "allowJs": true,
-    "types": ["node"],
-    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
     "experimentalDecorators": true
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "include": [
+    "./**/*.ts"
+  ],
+  "compileOnSave": false
 }

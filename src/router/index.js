@@ -42,11 +42,11 @@ routes = [
     //     name: 'result',
     //     component: () => import('screens/result/result')
     // },
-    // {
-    //     path: '/practiced',
-    //     name: 'practiced',
-    //     component: () => import('screens/practiced/practiced')
-    // },
+    {
+        path: '/practiced',
+        name: 'practiced',
+        component: () => import('screens/practiced/practiced')
+    },
     // {
     //     path: '/practicedResult',
     //     name: 'practicedResult',
