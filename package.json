@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "NODE_ENV=development node build/dev-server.js",
     "build": "NODE_ENV=production node build/build.js",
-    "parcel":"NODE_ENV=development parcel index.html"
+    "parcel": "NODE_ENV=development parcel index.html"
   },
   "dependencies": {
     "axios": "^0.17.1",

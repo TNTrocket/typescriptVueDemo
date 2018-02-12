@@ -63,13 +63,11 @@
 
     @Component
     export default class  extends Vue {
-//        data() {
-//            return {
         moduleName: string =""
 
-        practicedList: Array<any> 
+        practicedList: Array<any> =[]
 
-        unpracticedList: Array<any>
+        unpracticedList: Array<any> =[]
 
         barFixed:boolean = false
 
@@ -85,11 +83,8 @@
             unPracticed:string,
             wrapper:string
         }
-        // Element:{
-        //     offsetTop:number
-        // }
-//            }
-//        }
+     
+
         created() {
             this.init();
         }
@@ -98,7 +93,6 @@
 
         }
 
-//        methods: {
         init() {
             Indicator.open();
             let {type = "", module = ""} = this.$route.query;
@@ -186,7 +180,6 @@
                 }
             });
 
-//            }
         }
     }
 </script>

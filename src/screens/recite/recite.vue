@@ -42,7 +42,7 @@
     </div>
 </template>
 
-<script>
+<script lang='ts'>
     import apiCall from 'util/xhr'
     import answer from 'components/answer/index'
     import toast from 'components/toast/Toast'

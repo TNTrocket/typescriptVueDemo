@@ -47,11 +47,11 @@ routes = [
         name: 'practiced',
         component: () => import('screens/practiced/practiced')
     },
-    // {
-    //     path: '/practicedResult',
-    //     name: 'practicedResult',
-    //     component: () => import('screens/practicedResult/practicedResult')
-    // },
+    {
+        path: '/practicedResult',
+        name: 'practicedResult',
+        component: () => import('screens/practicedResult/practicedResult')
+    },
     // {
     //     path: '/wrongTxt',
     //     name: 'wrongTxt',

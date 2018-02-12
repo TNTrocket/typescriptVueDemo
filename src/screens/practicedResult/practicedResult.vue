@@ -2,26 +2,17 @@
    <result :practicType="practicType" ></result>
 </template>
 
-<script>
+<script lang="ts">
+   import Vue from 'vue'
+   import Component from 'vue-class-component'
    import result from '../result/result'
-
-    export default {
-        data() {
-            return {
-                practicType:1
-            }
-        },
-        created() {
-        },
-        mounted() {
-
-        },
-        methods: {
-
-        },
-        components:{
+   @Component({
+      components:{
             result
         }
+   })
+    export default class extends Vue {
+         practicType:number =1 
     }
 </script>
 
